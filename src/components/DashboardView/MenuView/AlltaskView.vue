@@ -784,7 +784,7 @@ export default {
         }
       ]
     },
-    // New methods for redesigned cards
+    
     truncateText(text, length = 80) {
       return text && text.length > length ? text.substring(0, length) + '...' : text
     },

@@ -3,6 +3,8 @@ const stateConfig = {
     drawer:false,
     email:"",
     username:"",
+    user_id:"",
+    tasks:[{}]
 }
 
 export default stateConfig

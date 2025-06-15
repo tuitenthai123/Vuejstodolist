@@ -24,31 +24,16 @@
             <v-card class="rounded-lg pa-4" elevation="2" style="width: 100%">
               <v-row align="center" justify="center">
                 <v-col cols="12" sm="4">
-                  <v-select
-                      v-model="filters.category"
-                      outlined
-                      label="Category"
-                      :items="categories"
-                      hide-details
-                  ></v-select>
+                  <v-select v-model="filters.category" outlined label="Category" :items="categories"
+                    hide-details></v-select>
                 </v-col>
                 <v-col cols="12" sm="4">
-                  <v-select
-                      v-model="filters.priority"
-                      outlined
-                      label="Priority"
-                      :items="priorities"
-                      hide-details
-                  ></v-select>
+                  <v-select v-model="filters.priority" outlined label="Priority" :items="priorities"
+                    hide-details></v-select>
                 </v-col>
                 <v-col cols="12" sm="4">
-                  <v-select
-                      v-model="filters.sortBy"
-                      outlined
-                      label="Sort by"
-                      :items="sortOptions"
-                      hide-details
-                  ></v-select>
+                  <v-select v-model="filters.sortBy" outlined label="Sort by" :items="sortOptions"
+                    hide-details></v-select>
                 </v-col>
               </v-row>
             </v-card>
@@ -61,40 +46,22 @@
           </div>
 
           <v-list-item v-for="task in filteredTasks" :key="task.id" class="my-3">
-            <v-card
-                style="width: 100%"
-                class="pa-4"
-                :class="{ 'task-completed': task.completed }"
-            >
+            <v-card style="width: 100%" class="pa-4" :class="{ 'task-completed': task.completed }">
               <v-row align="center">
                 <v-col cols="auto">
-                  <v-checkbox
-                      :value="task.completed"
-                      @click.stop="toggleTask(task.id)"
-                      color="primary"
-                  />
+                  <v-checkbox :value="task.completed" @click.stop="toggleTask(task.id)" color="primary" />
                 </v-col>
                 <v-col>
                   <div class="d-flex flex-column align-start">
                     <div class="title-task-card">
-                      <span
-                          class="text-subtitle-1 font-weight-medium"
-                          :class="{ 'text-decoration-line-through grey--text': task.completed }"
-                      >
+                      <span class="text-subtitle-1 font-weight-medium"
+                        :class="{ 'text-decoration-line-through grey--text': task.completed }">
                         {{ task.title }}
                       </span>
-                      <v-chip
-                          :color="getPriorityColor(task.priority)"
-                          text-color="white"
-                          x-small
-                      >
+                      <v-chip :color="getPriorityColor(task.priority)" text-color="white" x-small>
                         {{ task.priority }}
                       </v-chip>
-                      <v-chip
-                          outlined
-                          :color="getCategoryColor(task.category)"
-                          x-small
-                      >
+                      <v-chip outlined :color="getCategoryColor(task.category)" x-small>
                         {{ task.category }}
                       </v-chip>
                     </div>
@@ -140,12 +107,8 @@
                 <span class="text-h6">Suggested Tasks</span>
               </div>
               <v-list>
-                <v-list-item
-                    v-for="(suggestion, i) in suggestedTasks"
-                    :key="i"
-                    @click="addSuggestedTask(suggestion)"
-                    class="suggestion-item"
-                >
+                <v-list-item v-for="(suggestion, i) in suggestedTasks" :key="i" @click="addSuggestedTask(suggestion)"
+                  class="suggestion-item">
                   <v-list-item-avatar>
                     <v-avatar color="grey lighten-3">
                       <v-icon :color="getCategoryColor(suggestion.category)">
@@ -216,12 +179,7 @@
               <span>Today's Progress</span>
               <span>{{ todayProgressPercentage }}%</span>
             </div>
-            <v-progress-linear
-                :value="todayProgressPercentage"
-                rounded
-                height="8"
-                color="primary"
-            ></v-progress-linear>
+            <v-progress-linear :value="todayProgressPercentage" rounded height="8" color="primary"></v-progress-linear>
           </div>
         </v-card>
 
@@ -230,12 +188,7 @@
             <v-icon color="primary" class="mr-2">mdi-calendar</v-icon>
             <span class="font-weight-medium text-h6">Calendar</span>
           </div>
-          <v-date-picker
-              v-model="selectedDate"
-              width="100%"
-              color="primary"
-              @input="onDateChange"
-          ></v-date-picker>
+          <v-date-picker v-model="selectedDate" width="100%" color="primary" @input="onDateChange"></v-date-picker>
 
           <div class="mt-4" v-if="selectedDate">
             <v-divider class="mb-3"></v-divider>
@@ -263,35 +216,22 @@
                 <span>Progress</span>
                 <span>{{ selectedDateStats.progress }}%</span>
               </div>
-              <v-progress-linear
-                  :value="selectedDateStats.progress"
-                  rounded
-                  height="6"
-                  color="primary"
-              ></v-progress-linear>
+              <v-progress-linear :value="selectedDateStats.progress" rounded height="6"
+                color="primary"></v-progress-linear>
             </div>
 
             <div v-if="tasksForSelectedDate.length > 0">
               <div class="text-caption grey--text mb-2">Tasks:</div>
               <v-list dense>
-                <v-list-item
-                    v-for="task in tasksForSelectedDate"
-                    :key="task.id"
-                    class="px-0"
-                >
+                <v-list-item v-for="task in tasksForSelectedDate" :key="task.id" class="px-0">
                   <v-list-item-icon class="mr-2">
-                    <v-icon
-                        small
-                        :color="task.completed ? 'success' : 'grey'"
-                    >
+                    <v-icon small :color="task.completed ? 'success' : 'grey'">
                       {{ task.completed ? 'mdi-check-circle' : 'mdi-circle-outline' }}
                     </v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title
-                        class="text-caption"
-                        :class="{ 'text-decoration-line-through grey--text': task.completed }"
-                    >
+                    <v-list-item-title class="text-caption"
+                      :class="{ 'text-decoration-line-through grey--text': task.completed }">
                       {{ task.title }}
                     </v-list-item-title>
                   </v-list-item-content>
@@ -313,41 +253,19 @@
         </v-card-title>
         <v-card-text>
           <v-form ref="taskForm" v-model="formValid">
-            <v-text-field
-                v-model="taskForm.title"
-                label="Task Title"
-                :rules="[v => !!v || 'Title is required']"
-                required
-            ></v-text-field>
+            <v-text-field v-model="taskForm.title" label="Task Title" :rules="[v => !!v || 'Title is required']"
+              required></v-text-field>
 
-            <v-textarea
-                v-model="taskForm.description"
-                label="Description (Optional)"
-                rows="3"
-            ></v-textarea>
+            <v-textarea v-model="taskForm.description" label="Description (Optional)" rows="3"></v-textarea>
 
-            <v-select
-                v-model="taskForm.category"
-                :items="categories.filter(c => c !== 'All')"
-                label="Category"
-                :rules="[v => !!v || 'Category is required']"
-                required
-            ></v-select>
+            <v-select v-model="taskForm.category" :items="categories.filter(c => c !== 'All')" label="Category"
+              :rules="[v => !!v || 'Category is required']" required></v-select>
 
-            <v-select
-                v-model="taskForm.priority"
-                :items="priorities.filter(p => p !== 'All')"
-                label="Priority"
-                :rules="[v => !!v || 'Priority is required']"
-                required
-            ></v-select>
+            <v-select v-model="taskForm.priority" :items="priorities.filter(p => p !== 'All')" label="Priority"
+              :rules="[v => !!v || 'Priority is required']" required></v-select>
 
-            <v-text-field
-                v-model="taskForm.dueDate"
-                label="Due Date (Optional)"
-                type="date"
-                :value="today"
-            ></v-text-field>
+            <v-text-field v-model="taskForm.dueDate" label="Due Date (Optional)" type="date"
+              :value="today"></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -363,6 +281,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -374,7 +293,7 @@ export default {
           category: 'Work',
           priority: 'High',
           completed: false,
-          dueDate: '2025-01-08'
+          dueDate: '2025-01-15'
         },
         {
           id: 2,
@@ -383,7 +302,7 @@ export default {
           category: 'Health',
           priority: 'Medium',
           completed: true,
-          dueDate: '2025-01-08'
+          dueDate: '2025-01-15'
         },
         {
           id: 3,
@@ -392,7 +311,7 @@ export default {
           category: 'Finance',
           priority: 'Low',
           completed: false,
-          dueDate: '2025-01-08'
+          dueDate: '2025-06-15'
         },
         {
           id: 4,
@@ -401,7 +320,7 @@ export default {
           category: 'Work',
           priority: 'High',
           completed: true,
-          dueDate: '2025-01-08'
+          dueDate: '2025-06-16'
         },
         {
           id: 5,
@@ -410,7 +329,7 @@ export default {
           category: 'Personal',
           priority: 'Medium',
           completed: false,
-          dueDate: '2025-01-08'
+          dueDate: '2025-06-15'
         }
       ],
       suggestedTasks: [
@@ -458,12 +377,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["user_id"]),
+
     today() {
       return new Date().toISOString().substr(0, 10);
     },
     filteredTasks() {
       const today = this.today;
-
       let filtered = this.tasks.filter(task => {
         const categoryMatch = this.filters.category === 'All' || task.category === this.filters.category;
         const priorityMatch = this.filters.priority === 'All' || task.priority === this.filters.priority;
@@ -542,7 +462,16 @@ export default {
       });
     }
   },
+
+  created() {
+    this._getDatatask({
+      userid: this.user_id
+    })
+  },
   methods: {
+    ...mapActions(["_getDatatask"]),
+
+
     formatDate(date) {
       return date.toLocaleDateString('en-US', {
         weekday: 'long',

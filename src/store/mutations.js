@@ -10,6 +10,12 @@ const mutationsConfig = {
     },
     SET_USER_NAME(state, status) {
         state.username = status
+    },
+    SET_USER_ID(state, status) {
+        state.user_id = status
+    },
+    SET_TASKS_DATA(state, status) {
+        state.tasks = status
     }
 }
 

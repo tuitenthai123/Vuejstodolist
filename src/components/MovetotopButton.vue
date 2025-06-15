@@ -3,7 +3,6 @@ export default {
   name: 'MovetotopButton',
   props: {
     pixelDepth: {
-      type: Number,
       default: 200
     },
   },
