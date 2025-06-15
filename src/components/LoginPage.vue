@@ -8,45 +8,48 @@
               <span class="text-h4 font-weight-bold">LOGIN</span>
             </v-card-title>
 
-            <v-card-text class="px-8 pt-8">
-              <v-text-field 
-                v-model="username"
-                clearable 
-                label="Username" 
-                prepend-icon="mdi-account" 
-                variant="underlined" 
-                hide-details
-                class="mb-6"
-              ></v-text-field>
+            <form @submit.prevent="handleLogin">
+              <v-card-text class="px-8 pt-8">
+                <v-text-field 
+                  v-model="email"
+                  clearable 
+                  label="Email" 
+                  prepend-icon="mdi-email" 
+                  variant="underlined" 
+                  hide-details
+                  class="mb-6"
+                  @keyup.enter="handleLogin"  
+                ></v-text-field>
 
-              <v-text-field 
-                v-model="password"
-                label="Password" 
-                prepend-icon="mdi-lock" 
-                variant="underlined"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
-                :type="showPassword ? 'text' : 'password'"
-                @click:append="showPassword = !showPassword" 
-                hide-details 
-                class="mb-6"
-              ></v-text-field>
+                <v-text-field 
+                  v-model="password"
+                  label="Password" 
+                  prepend-icon="mdi-lock" 
+                  variant="underlined"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append="showPassword = !showPassword" 
+                  hide-details 
+                  class="mb-6"
+                  @keyup.enter="handleLogin"
+                ></v-text-field>
 
-              <v-row no-gutters class="mb-6" justify="space-between" align="center">
-                <v-checkbox dense label="Remember me" hide-details></v-checkbox>
-                <v-btn text color="primary" class="text-none">Forgot password?</v-btn>
-              </v-row>
+                <v-row no-gutters class="mb-6" justify="space-between" align="center">
+                  <v-checkbox dense label="Remember me" hide-details></v-checkbox>
+                  <v-btn text color="primary" class="text-none">Forgot password?</v-btn>
+                </v-row>
 
-              <v-btn block color="primary" height="44" rounded elevation="2" class="text-h6 mb-8"
-                @click="handleLogin">
-                LOGIN
-              </v-btn>
-              
-              <div class="text-center">
-                <router-link to="/signup" class="text-decoration-none">
-                  Don't have an account? Sign up
-                </router-link>
-              </div>
-            </v-card-text>
+                <v-btn type="submit" block color="primary" height="44" rounded elevation="2" class="text-h6 mb-8">
+                  LOGIN
+                </v-btn>
+                
+                <div class="text-center">
+                  <router-link to="/signup" class="text-decoration-none">
+                    Don't have an account? Sign up
+                  </router-link>
+                </div>
+              </v-card-text>
+            </form>
           </v-card>
         </v-col>
       </v-row>
@@ -68,6 +71,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'LoginPage',
   data: () => ({
+    email:"",
     username: '',
     password: '',
     showPassword: false,
@@ -81,19 +85,19 @@ export default {
   methods: {
     ...mapActions(['login']),
     async handleLogin() {
-      if (!this.username || !this.password) {
-        this.showSnackbar('Please enter username and password', 'error');
+      if (!this.email || !this.password) {
+        this.showSnackbar('Please enter email and password', 'error');
         return;
       }
 
       const success = await this.login({
-        username: this.username,
-        password: this.password
+        email: this.email,
+        password: this.password,
       });
 
       if (success) {
         this.showSnackbar('Login successful!', 'success');
-        this.$router.push('/dashboard/today');
+        this.$router.push('/dashboard/today').catch(()=>{});
       } else {
         this.showSnackbar('Login failed. Please check your credentials.', 'error');
       }

@@ -4,6 +4,12 @@ const mutationsConfig = {
     },
     SET_DRAWER_STATUS(state, status) {
         state.drawer = status
+    },
+    SET_EMAIL(state, status) {
+        state.email = status
+    },
+    SET_USER_NAME(state, status) {
+        state.username = status
     }
 }
 

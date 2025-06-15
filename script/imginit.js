@@ -4,9 +4,9 @@ import { v2 as cloudinary } from 'cloudinary';
 
     // Configuration
     cloudinary.config({
-        cloud_name: 'dwfqk8anz',
-        api_key: '578326889185116',
-        api_secret: 'nfSmXovpM_M8TGrZzBBTuLwq1Kg' // Click 'View API Keys' above to copy your API secret
+        cloud_name: process.env.VUE_APP_CLOUD_NAME,
+        api_key: process.env.VUE_APP_API_KEY,
+        api_secret: process.env.VUE_APP_SECRET_KEY // Click 'View API Keys' above to copy your API secret
     });
 
     // Upload an image

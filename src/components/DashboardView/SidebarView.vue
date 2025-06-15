@@ -12,11 +12,10 @@ export default {
         {title: 'Coming Up', icon: 'mdi-calendar-arrow-right',route:"comingup"},
         {title: 'All Tasks', icon: 'mdi-format-list-bulleted',route:"all-tasks"},
       ],
-
     }
   },
   computed: {
-    ...mapGetters(["drawer"]),
+    ...mapGetters(["drawer","email","username"]),
     drawerSync: {
       get() {
         return this.drawer;
@@ -61,8 +60,8 @@ export default {
           >
         </v-avatar>
         <div class="d-flex flex-column justify-start">
-            <span class="font-weight-medium text-h5">Thái Nguyên</span>
-            <span class="text-caption grey--text">thainguyen240303@gmail.com</span>
+            <span class="font-weight-medium text-h5">{{ this.username }}</span>
+            <span class="text-caption grey--text">{{ this.email }}</span>
         </div>
       </v-list-item>
 

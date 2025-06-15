@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const actionsConfig = {
-    async login({commit}, credentials) {
+    async login({ commit }, credentials) {
         try {
             const config = {
                 headers: {
@@ -15,9 +15,23 @@ const actionsConfig = {
                 config
             );
 
+            const rawUsername = response?.data?.username || '';
+            const lowerUsername = typeof rawUsername === 'string'
+                ? rawUsername.toLowerCase()
+                : rawUsername;
+
+            const datauser = {
+                id: response?.data?.id,
+                username: lowerUsername,
+                email: response?.data?.email
+            };
+
             if (response.data?.token) {
                 commit('SET_LOGIN_STATUS', true);
-                localStorage.setItem('token', response.data.token);
+                commit('SET_EMAIL', response?.data?.email);
+                commit('SET_USER_NAME', lowerUsername);
+                localStorage.setItem("token", response?.data?.token);
+                localStorage.setItem('user_info', JSON.stringify(datauser));
                 return true;
             }
             return false;
@@ -25,6 +39,7 @@ const actionsConfig = {
             return false;
         }
     },
+
 
     async _Signup(context, infouser) {
         console.log(infouser)
@@ -49,12 +64,12 @@ const actionsConfig = {
         }
     },
 
-    _Logout({commit}) {
+    _Logout({ commit }) {
         commit('SET_LOGIN_STATUS', false);
-        localStorage.removeItem('token')
+        localStorage.clear();
     },
 
-    _setDraw({commit}) {
+    _setDraw({ commit }) {
         commit('SET_DRAWER_STATUS', true);
     },
 }

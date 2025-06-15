@@ -8,25 +8,28 @@
               <span class="text-h4 font-weight-bold">SIGN UP</span>
             </v-card-title>
 
-            <v-card-text class="px-8 pt-8">
-              <v-text-field v-model="username" label="Username" prepend-icon="mdi-account" hide-details
-                            class="mb-6"></v-text-field>
+            <form @submit.prevent="handleSignUp">
+              <v-card-text class="px-8 pt-8">
+                <v-text-field v-model="email" :rules="emailRules" required label="Email" prepend-icon="mdi-account"
+                  hide-details class="mb-6" @keyup.enter="handleSignUp"></v-text-field>
 
-              <v-text-field v-model="password" label="Password" :type="showPassword ? 'text' : 'password'"
-                            prepend-icon="mdi-lock" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                            @click:append="showPassword = !showPassword" hide-details class="mb-6"></v-text-field>
+                <v-text-field v-model="password" label="Password" :type="showPassword ? 'text' : 'password'"
+                  prepend-icon="mdi-lock" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="showPassword = !showPassword" hide-details required class="mb-6"  @keyup.enter="handleSignUp"></v-text-field>
 
-              <v-btn block color="primary" height="44" rounded elevation="2" class="mb-8"
-                     @click="handleSignUp">
-                SIGN UP
-              </v-btn>
+                <v-btn block color="primary" height="44" rounded elevation="2" class="mb-8" type="submit">
+                  SIGN UP
+                </v-btn>
 
-              <div class="text-center">
-                <router-link to="/" class="text-decoration-none">
-                  Already have an account? Login
-                </router-link>
-              </div>
-            </v-card-text>
+                <div class="text-center">
+                  <router-link to="/" class="text-decoration-none">
+                    Already have an account? Login
+                  </router-link>
+                </div>
+              </v-card-text>
+            </form>
+
+
           </v-card>
         </v-col>
       </v-row>
@@ -43,38 +46,45 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex';
+import { mapActions } from 'vuex';
 import sleep from '@/lib/sleep';
+import generateRandomName from "@/lib/Randomname";
 
 export default {
   name: 'SignUpPage',
   data: () => ({
+    email: '',
     username: '',
     password: '',
     showPassword: false,
     snackbar: false,
     snackbarText: '',
     snackbarColor: 'success',
-
+    emailRules: [
+      v => !!v || 'E-mail is required',
+      v => /.+@.+/.test(v) || 'E-mail must be valid',
+    ],
   }),
   methods: {
     ...mapActions(["_Signup"]),
     async handleSignUp() {
-      if (!this.username || !this.password) {
-        this.showSnackbar('Please enter username and password', 'error');
+      if (!this.email || !this.password) {
+        this.showSnackbar('Please enter email and password', 'error');
         return;
       }
 
       const response = await this._Signup(
-          {
-            username: this.username,
-            password: this.password
-          }
+        {
+          email: this.email,
+          id: generateRandomName(10),
+          username: `user_${generateRandomName(10)}`,
+          password: this.password
+        }
       )
       if (response) {
         this.showSnackbar('Now you can use your account', 'success');
         await sleep(2000);
-        this.$router.push('/');
+        this.$router.push('/').catch(()=>{});
       } else {
         this.showSnackbar('Create failed. Please check your credentials.', 'error');
       }
@@ -85,9 +95,7 @@ export default {
       this.snackbar = true;
     }
   }
-
 }
-
 </script>
 
 <style scoped>
