@@ -68,7 +68,7 @@ const actionsConfig = {
 
     //load data function
 
-    async _getDatatask(context, infouser) {
+    async _getDatatask({commit}, infouser) {
         try {
             const config = {
                 headers: {
@@ -81,8 +81,39 @@ const actionsConfig = {
                 {userid:infouser?.userid},
                 config
             );
+            
+            commit('SET_TASKS_DATA',JSON.parse(response?.data?.taskdata[0]?.tasks));
+            if (response.data) return response.data;
 
-            if (response.data) return true;
+            return false;
+        } catch (error) {
+            return false;
+        }
+        
+    },
+
+    async _addNewtask({commit}, newtasksdata) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const stringtask = JSON.stringify(newtasksdata?.tasks)
+
+            const add_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/tasks/add-new-tasks`,
+                {
+                    newtasks: stringtask,
+                    user_id: newtasksdata?.userid
+                },
+                config
+            );
+            console.log(add_status)
+            
+            commit('SET_TASKS_DATA', newtasksdata?.tasks);
+            if (add_status.data) return add_status.data;
 
             return false;
         } catch (error) {
@@ -93,7 +124,6 @@ const actionsConfig = {
 
 
     //orther function
-
     _Logout({ commit }) {
         commit('SET_LOGIN_STATUS', false);
         localStorage.clear();

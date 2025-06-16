@@ -285,53 +285,6 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      tasks: [
-        {
-          id: 1,
-          title: 'Complete project proposal',
-          description: 'Finish the quarterly project proposal for client review',
-          category: 'Work',
-          priority: 'High',
-          completed: false,
-          dueDate: '2025-01-15'
-        },
-        {
-          id: 2,
-          title: 'Morning workout',
-          description: '30 minutes cardio and strength training',
-          category: 'Health',
-          priority: 'Medium',
-          completed: true,
-          dueDate: '2025-01-15'
-        },
-        {
-          id: 3,
-          title: 'Read investment book',
-          description: 'Continue reading "The Intelligent Investor"',
-          category: 'Finance',
-          priority: 'Low',
-          completed: false,
-          dueDate: '2025-06-15'
-        },
-        {
-          id: 4,
-          title: 'Team meeting',
-          description: 'Weekly team sync meeting',
-          category: 'Work',
-          priority: 'High',
-          completed: true,
-          dueDate: '2025-06-16'
-        },
-        {
-          id: 5,
-          title: 'Buy groceries',
-          description: 'Weekly grocery shopping',
-          category: 'Personal',
-          priority: 'Medium',
-          completed: false,
-          dueDate: '2025-06-15'
-        }
-      ],
       suggestedTasks: [
         { title: 'Update CV', category: 'Personal', priority: 'Medium' },
         { title: 'Check work email', category: 'Work', priority: 'High' },
@@ -377,7 +330,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["user_id"]),
+    ...mapGetters(["user_id","tasks"]),
 
     today() {
       return new Date().toISOString().substr(0, 10);
@@ -464,13 +417,16 @@ export default {
   },
 
   created() {
-    this._getDatatask({
-      userid: this.user_id
-    })
+    this.handleLoadingDataTask()
   },
   methods: {
-    ...mapActions(["_getDatatask"]),
+    ...mapActions(["_getDatatask","_addNewtask"]),
 
+    async handleLoadingDataTask (){
+      await this._getDatatask({
+        userid: this.user_id
+      })
+    },
 
     formatDate(date) {
       return date.toLocaleDateString('en-US', {
@@ -508,12 +464,14 @@ export default {
       };
       return colors[priority] || 'grey';
     },
+
     toggleTask(taskId) {
       const taskIndex = this.tasks.findIndex(t => t.id === taskId);
       if (taskIndex !== -1) {
         this.$set(this.tasks[taskIndex], 'completed', !this.tasks[taskIndex].completed);
       }
     },
+
     addSuggestedTask(suggestion) {
       const newTask = {
         id: Date.now(),
@@ -524,8 +482,14 @@ export default {
         completed: false,
         dueDate: this.today // Set to today's date
       };
+      const newtasksdata = {
+        tasks: this.tasks,
+        userid: this.user_id
+      }
       this.tasks.push(newTask);
+      this._addNewtask(newtasksdata)
     },
+
     editTask(task) {
       this.editingTask = task;
       this.taskForm = {
@@ -537,9 +501,11 @@ export default {
       };
       this.showAddDialog = true;
     },
+
     deleteTask(taskId) {
       this.tasks = this.tasks.filter(task => task.id !== taskId);
     },
+
     saveTask() {
       if (!this.formValid) return;
 
