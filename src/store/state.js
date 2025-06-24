@@ -4,7 +4,7 @@ const stateConfig = {
     email:"",
     username:"",
     user_id:"",
-    tasks:"",
+    tasks:"[]",
 }
 
 export default stateConfig

@@ -1,5 +1,9 @@
 <template>
   <div class="pa-3">
+    <v-overlay :value="loading" absolute opacity="0.7">
+      <v-progress-circular indeterminate size="64" color="primary" />
+    </v-overlay>
+
     <v-row>
       <v-col cols="12" md="9">
         <v-list>
@@ -326,7 +330,8 @@ export default {
         category: '',
         priority: '',
         dueDate: ''
-      }
+      },
+      loading: false
     }
   },
   computed: {
@@ -416,9 +421,14 @@ export default {
     }
   },
 
-  created() {
-    this.handleLoadingDataTask()
+  beforeRouteEnter(to, from, next) {
+    next(async vm => {
+      vm.loading = true;
+      await vm.handleLoadingDataTask();
+      vm.loading = false;
+    })
   },
+
   methods: {
     ...mapActions(["_getDatatask","_addNewtask"]),
 

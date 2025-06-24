@@ -61,22 +61,21 @@ const router = new VueRouter({
   routes
 })
 
-// Global middleware guard
-// Global middleware guard
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token')
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!isAuthenticated) {
-      next({
-        path: '/',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      next() // đã đăng nhập thì cho qua
-    }
-  } else {
-    next() // không cần auth thì cho qua
+  if (isAuthenticated && (to.path === '/' || to.path === '/login')) {
+    next('/dashboard/today')
+  }
+  else if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    next({
+      path: '/',
+      query: { redirect: to.fullPath }
+    })
+  }
+  else {
+    next()
   }
 })
+
 
 export default router

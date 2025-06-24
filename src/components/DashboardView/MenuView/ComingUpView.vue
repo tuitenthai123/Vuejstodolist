@@ -103,7 +103,7 @@
                         :class="getDayCardClass(day)"
                         @click="selectDay(day)"
                         @mouseenter="handleDayHover(day, $event)"
-                        @mouseleave="hideHoverCard"
+                        @mouseleave="handleDayMouseLeave"
                         elevation="1"
                         height="120"
                     >
@@ -167,10 +167,17 @@
                   v-if="hoverCard.show"
                   class="hover-task-card elevation-8"
                   :style="hoverCard.style"
+                  @mouseenter="handleHoverCardEnter"
+                  @mouseleave="handleHoverCardLeave"
+                  @click="selectDayFromHover"
               >
                 <v-card-title class="py-2">
                   <v-icon color="primary" class="mr-2">mdi-calendar-today</v-icon>
                   <span class="text-subtitle-1">{{ formatHoverDate(hoverCard.day) }}</span>
+                  <v-spacer></v-spacer>
+                  <v-btn icon small @click.stop="hideHoverCard">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="pa-2" style="max-height: 300px; overflow-y: auto;">
@@ -179,6 +186,7 @@
                         v-for="task in hoverCard.tasks"
                         :key="task.id"
                         class="px-2 py-1"
+                        @click.stop="editTask(task)"
                     >
                       <v-list-item-avatar size="24" class="mr-2">
                         <v-icon
@@ -216,6 +224,15 @@
                     </v-list-item>
                   </v-list>
                 </v-card-text>
+                <v-card-actions class="pa-2">
+                  <v-btn small color="primary" @click.stop="selectDayFromHover">
+                    View All Tasks
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn small text @click.stop="hideHoverCard">
+                    Close
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-card>
           </v-list-item>
@@ -506,7 +523,9 @@
 </template>
 
 <script>
-export default {
+import { mapGetters } from "vuex";
+
+export default {  
   data() {
     return {
       currentDate: new Date(),
@@ -516,83 +535,12 @@ export default {
         show: false,
         day: null,
         tasks: [],
-        style: {}
+        style: {},
+        isHovering: false // Thêm flag để track hover state
       },
       hoverTimeout: null,
-      tasks: [
-        {
-          id: 1,
-          title: 'Complete project proposal',
-          description: 'Finish the quarterly project proposal for client review',
-          category: 'Work',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getTodayDate()
-        },
-        {
-          id: 2,
-          title: 'Morning workout',
-          description: '30 minutes cardio and strength training',
-          category: 'Health',
-          priority: 'Medium',
-          completed: true,
-          dueDate: this.getTodayDate()
-        },
-        {
-          id: 3,
-          title: 'Read investment book',
-          description: 'Continue reading "The Intelligent Investor"',
-          category: 'Finance',
-          priority: 'Low',
-          completed: false,
-          dueDate: this.getTodayDate()
-        },
-        {
-          id: 4,
-          title: 'Team meeting',
-          description: 'Weekly team sync meeting',
-          category: 'Work',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getTomorrowDate()
-        },
-        {
-          id: 5,
-          title: 'Buy groceries',
-          description: 'Weekly grocery shopping',
-          category: 'Personal',
-          priority: 'Medium',
-          completed: false,
-          dueDate: this.getDateAfterDays(2)
-        },
-        {
-          id: 6,
-          title: 'Dentist appointment',
-          description: 'Regular checkup',
-          category: 'Health',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getDateAfterDays(3)
-        },
-        {
-          id: 7,
-          title: 'Review quarterly budget',
-          description: 'Analyze Q1 expenses and plan for Q2',
-          category: 'Finance',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getDateAfterDays(5)
-        },
-        {
-          id: 8,
-          title: 'Family dinner',
-          description: 'Dinner at parents house',
-          category: 'Personal',
-          priority: 'Medium',
-          completed: false,
-          dueDate: this.getDateAfterDays(7)
-        }
-      ],
+      hideTimeout: null, // Thêm timeout cho việc ẩn card
+      
       daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       categories: ['All', 'Work', 'Personal', 'Health', 'Finance', 'Study'],
       priorities: ['All', 'High', 'Medium', 'Low'],
@@ -617,6 +565,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["user_id","tasks"]),
     calendarWeeks() {
       const year = this.currentDate.getFullYear();
       const month = this.currentDate.getMonth();
@@ -802,7 +751,9 @@ export default {
       const tasks = this.getTasksForDay(day);
 
       if (tasks.length >= 1) {
+        // Clear any existing timeouts
         clearTimeout(this.hoverTimeout);
+        clearTimeout(this.hideTimeout);
 
         this.hoverTimeout = setTimeout(() => {
           const rect = event.target.getBoundingClientRect();
@@ -823,6 +774,7 @@ export default {
             show: true,
             day: day,
             tasks: tasks,
+            isHovering: false,
             style: {
               position: 'absolute',
               left: `${left}px`,
@@ -835,11 +787,36 @@ export default {
         }, 300);
       }
     },
+    // Xử lý khi mouse leave khỏi calendar day
+    handleDayMouseLeave() {
+      clearTimeout(this.hoverTimeout);
+      
+      // Chỉ ẩn card nếu không đang hover vào card
+      if (!this.hoverCard.isHovering) {
+        this.hideTimeout = setTimeout(() => {
+          if (!this.hoverCard.isHovering) {
+            this.hoverCard.show = false;
+          }
+        }, 200);
+      }
+    },
+    // Xử lý khi mouse enter vào hover card
+    handleHoverCardEnter() {
+      clearTimeout(this.hideTimeout);
+      this.hoverCard.isHovering = true;
+    },
+    // Xử lý khi mouse leave khỏi hover card
+    handleHoverCardLeave() {
+      this.hoverCard.isHovering = false;
+      this.hideTimeout = setTimeout(() => {
+        this.hoverCard.show = false;
+      }, 200);
+    },
     hideHoverCard() {
       clearTimeout(this.hoverTimeout);
-      this.hoverTimeout = setTimeout(() => {
-        this.hoverCard.show = false;
-      }, 100);
+      clearTimeout(this.hideTimeout);
+      this.hoverCard.show = false;
+      this.hoverCard.isHovering = false;
     },
     selectDayFromHover() {
       this.selectedDay = this.hoverCard.day;
@@ -1090,10 +1067,11 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 300px;
   animation: fadeInUp 0.2s ease-out;
+  cursor: pointer;
 }
 
 .hover-task-card:hover {
-  pointer-events: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes fadeInUp {

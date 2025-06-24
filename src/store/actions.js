@@ -44,6 +44,8 @@ const actionsConfig = {
     },
 
 
+
+
     async _Signup(context, infouser) {
         try {
             const config = {
@@ -81,8 +83,10 @@ const actionsConfig = {
                 {userid:infouser?.userid},
                 config
             );
-            
-            commit('SET_TASKS_DATA',JSON.parse(response?.data?.taskdata[0]?.tasks));
+            const tasksdata =  response?.data?.taskdata[0]?.tasks
+
+            tasksdata ? commit('SET_TASKS_DATA',JSON.parse(tasksdata)) : commit('SET_TASKS_DATA',JSON.parse("[]"));
+        
             if (response.data) return response.data;
 
             return false;
@@ -124,13 +128,22 @@ const actionsConfig = {
 
 
     //orther function
-    _Logout({ commit }) {
-        commit('SET_LOGIN_STATUS', false);
+    _Logout({dispatch}) {
+        dispatch('_Clearstate')
         localStorage.clear();
     },
 
     _setDraw({ commit }) {
         commit('SET_DRAWER_STATUS', true);
+    },
+
+    _Clearstate({ commit }){
+        commit('SET_LOGIN_STATUS',false);
+        commit('SET_DRAWER_STATUS',false);
+        commit('SET_EMAIL','');
+        commit('SET_USER_NAME','');
+        commit('SET_USER_ID','');
+        commit('SET_TASKS_DATA','');
     },
 }
 

@@ -564,6 +564,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: 'TasksTab',
   data() {
@@ -578,7 +579,6 @@ export default {
       showAddDialog: false,
       editingTask: null,
       formValid: false,
-      tasks: [],
       categories: ['All', 'Work', 'Personal', 'Health', 'Finance', 'Study'],
       priorities: ['All', 'High', 'Medium', 'Low'],
       statusOptions: [
@@ -635,6 +635,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["user_id","tasks"]),
     categorySelectOptions() {
       return this.categories.filter(c => c !== 'All')
     },
@@ -696,95 +697,8 @@ export default {
       return stats
     }
   },
-  created() {
-    this.initializeTasks()
-  },
-  methods: {
-    initializeTasks() {
-      this.tasks = [
-        {
-          id: 1,
-          title: 'Complete project proposal',
-          description: 'Finish the quarterly project proposal for client review and presentation',
-          category: 'Work',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getTodayDate(),
-          createdAt: '2025-01-01'
-        },
-        {
-          id: 2,
-          title: 'Morning workout',
-          description: '30 minutes cardio and strength training at the gym',
-          category: 'Health',
-          priority: 'Medium',
-          completed: true,
-          dueDate: this.getTodayDate(),
-          createdAt: '2025-01-02'
-        },
-        {
-          id: 3,
-          title: 'Read investment book',
-          description: 'Continue reading "The Intelligent Investor" - Chapter 5',
-          category: 'Finance',
-          priority: 'Low',
-          completed: false,
-          dueDate: this.getTomorrowDate(),
-          createdAt: '2025-01-03'
-        },
-        {
-          id: 4,
-          title: 'Team meeting',
-          description: 'Weekly team sync meeting to discuss project progress',
-          category: 'Work',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getDateAfterDays(-1),
-          createdAt: '2025-01-04'
-        },
-        {
-          id: 5,
-          title: 'Buy groceries',
-          description: 'Weekly grocery shopping for the family',
-          category: 'Personal',
-          priority: 'Medium',
-          completed: false,
-          dueDate: this.getDateAfterDays(2),
-          createdAt: '2025-01-05'
-        },
-        {
-          id: 6,
-          title: 'Dentist appointment',
-          description: 'Regular dental checkup and cleaning',
-          category: 'Health',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getDateAfterDays(3),
-          createdAt: '2025-01-06'
-        },
-        {
-          id: 7,
-          title: 'Review quarterly budget',
-          description: 'Analyze Q1 expenses and plan for Q2 budget allocation',
-          category: 'Finance',
-          priority: 'High',
-          completed: false,
-          dueDate: this.getDateAfterDays(5),
-          createdAt: '2025-01-07'
-        },
-        {
-          id: 8,
-          title: 'Family dinner',
-          description: 'Dinner at parents house for monthly family gathering',
-          category: 'Personal',
-          priority: 'Medium',
-          completed: false,
-          dueDate: this.getDateAfterDays(7),
-          createdAt: '2025-01-08'
-        }
-      ]
-    },
-    
+
+  methods: {   
     truncateText(text, length = 80) {
       return text && text.length > length ? text.substring(0, length) + '...' : text
     },
