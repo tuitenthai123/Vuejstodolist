@@ -564,7 +564,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters,mapActions } from "vuex";
 export default {
   name: 'TasksTab',
   data() {
@@ -699,6 +699,7 @@ export default {
   },
 
   methods: {   
+    ...mapActions(["_getDatatask", "_addNewtask","_updateNewtask","_deleteNewtask"]),
     truncateText(text, length = 80) {
       return text && text.length > length ? text.substring(0, length) + '...' : text
     },
@@ -909,6 +910,11 @@ export default {
       const taskIndex = this.tasks.findIndex(t => t.id === taskId)
       if (taskIndex !== -1) {
         this.$set(this.tasks[taskIndex], 'completed', completed)
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       }
     },
     editTask(task) {
@@ -937,14 +943,23 @@ export default {
       this.tasks.push(newTask)
     },
     deleteTask(taskId) {
-      this.tasks = this.tasks.filter(task => task.id !== taskId)
-      this.showTaskDetail = false
+      const newTasks = this.tasks.filter(task => task.id !== taskId);
+      const newtasksdata = {
+        tasks: newTasks,
+        userid: this.user_id
+      }
+      this._deleteNewtask(newtasksdata)
     },
     saveTask() {
       if (!this.formValid) return
 
       if (this.editingTask) {
         Object.assign(this.editingTask, this.taskForm)
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       } else {
         const newTask = {
           id: Date.now(),
@@ -953,6 +968,11 @@ export default {
           createdAt:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
         }
         this.tasks.push(newTask)
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._addNewtask(newtasksdata)
       }
 
       this.closeDialog()

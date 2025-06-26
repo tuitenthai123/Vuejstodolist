@@ -4,6 +4,7 @@ const stateConfig = {
     email:"",
     username:"",
     user_id:"",
+    avata:"",
     tasks:"[]",
 }
 

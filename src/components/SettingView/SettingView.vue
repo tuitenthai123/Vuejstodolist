@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <!-- User Profile Section -->
+
       <v-card class="mb-6" elevation="2">
         <v-card-title class="d-flex align-center">
           <v-icon color="primary" class="mr-3">mdi-account-circle</v-icon>
@@ -37,7 +37,6 @@
         <v-divider></v-divider>
 
         <v-card-text class="pa-6">
-          <!-- Avatar Section -->
           <div class="d-flex align-center mb-6">
             <v-avatar size="80" class="mr-4">
               <v-img
@@ -71,7 +70,6 @@
             </div>
           </div>
 
-          <!-- Profile Form -->
           <v-form ref="profileForm" v-model="profileFormValid">
             <v-row>
               <v-col cols="12" md="6">
@@ -180,7 +178,6 @@
         </v-card-actions>
       </v-card>
 
-      <!-- Password Section -->
       <v-card class="mb-6" elevation="2">
         <v-card-title class="d-flex align-center">
           <v-icon color="primary" class="mr-3">mdi-lock</v-icon>
@@ -208,7 +205,6 @@
         </v-card-text>
       </v-card>
 
-      <!-- Account Settings -->
       <v-card class="mb-6" elevation="2">
         <v-card-title class="d-flex align-center">
           <v-icon color="primary" class="mr-3">mdi-cog</v-icon>
@@ -280,7 +276,6 @@
         </v-card-actions>
       </v-card>
 
-      <!-- Danger Zone -->
       <v-card elevation="2" class="border-error">
         <v-card-title class="d-flex align-center error--text">
           <v-icon color="error" class="mr-3">mdi-alert-circle</v-icon>
@@ -310,7 +305,6 @@
       </v-card>
     </v-container>
 
-    <!-- Change Password Dialog -->
     <v-dialog v-model="showPasswordDialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="d-flex align-center">
@@ -324,7 +318,6 @@
 
         <v-divider></v-divider>
 
-        <!-- Step 1: Verify Current Password -->
         <div v-if="!passwordVerified">
           <v-card-text class="pa-6">
             <v-alert
@@ -375,7 +368,6 @@
           </v-card-actions>
         </div>
 
-        <!-- Step 2: Change Password Form -->
         <div v-else>
           <v-card-text class="pa-6">
             <v-alert
@@ -422,7 +414,6 @@
                 </v-col>
               </v-row>
 
-              <!-- Password Strength Indicator -->
               <div class="mb-4">
                 <div class="d-flex align-center mb-2">
                   <span class="text-caption grey--text mr-2">Password Strength:</span>
@@ -438,7 +429,6 @@
                 ></v-progress-linear>
               </div>
 
-              <!-- Password Requirements -->
               <v-card outlined class="mb-4">
                 <v-card-text class="pa-3">
                   <div class="d-flex align-center mb-2">
@@ -519,7 +509,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Success Snackbar -->
     <v-snackbar
         v-model="showSuccessSnackbar"
         color="success"
@@ -530,7 +519,6 @@
       {{ successMessage }}
     </v-snackbar>
 
-    <!-- Error Snackbar -->
     <v-snackbar
         v-model="showErrorSnackbar"
         color="error"
@@ -541,7 +529,6 @@
       {{ errorMessage }}
     </v-snackbar>
 
-    <!-- Delete Account Dialog -->
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="error--text">
@@ -581,7 +568,6 @@ export default {
   name: 'SettingsPage',
   data() {
     return {
-      // User Information
       userInfo: {
         username: 'john_doe',
         userId: 'USR_123456789',
@@ -589,17 +575,15 @@ export default {
         firstName: 'John',
         lastName: 'Doe',
         bio: 'Software developer passionate about creating amazing user experiences.',
-        avatar: null
+        avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"
       },
 
-      // Profile Form
       profileForm: {},
       profileFormValid: false,
       editingProfile: false,
       savingProfile: false,
       uploadingAvatar: false,
 
-      // Password Dialog
       showPasswordDialog: false,
       passwordVerified: false,
       verifying: false,
@@ -608,7 +592,6 @@ export default {
       passwordError: '',
       showCurrentPassword: false,
 
-      // Password Change Form
       passwordForm: {
         newPassword: '',
         confirmPassword: ''
@@ -618,7 +601,6 @@ export default {
       showNewPassword: false,
       showConfirmPassword: false,
 
-      // Account Settings
       accountSettings: {
         language: 'English',
         timezone: 'UTC+7 (Asia/Ho_Chi_Minh)',
@@ -628,7 +610,6 @@ export default {
       },
       savingSettings: false,
 
-      // Options
       languageOptions: [
         'English',
         'Tiếng Việt',
@@ -644,18 +625,15 @@ export default {
         'UTC+1 (CET)'
       ],
 
-      // Snackbars
       showSuccessSnackbar: false,
       showErrorSnackbar: false,
       successMessage: '',
       errorMessage: '',
 
-      // Delete Account
       showDeleteDialog: false,
       deleteConfirmation: '',
       deletingAccount: false,
 
-      // Validation Rules
       usernameRules: [
         v => !!v || 'Username is required',
         v => (v && v.length >= 3) || 'Username must be at least 3 characters',
@@ -745,11 +723,9 @@ export default {
   },
   methods: {
     goBack() {
-      // If using vue-router
       if (this.$router) {
         this.$router.back()
       } else {
-        // Fallback if not using vue-router
         window.history.back()
       }
     },
@@ -772,10 +748,8 @@ export default {
 
       this.savingProfile = true
       try {
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500))
 
-        // Update user info
         Object.assign(this.userInfo, this.profileForm)
 
         this.editingProfile = false
@@ -791,13 +765,11 @@ export default {
       const file = event.target.files[0]
       if (!file) return
 
-      // Validate file size (2MB)
       if (file.size > 2 * 1024 * 1024) {
         this.showError('File size must be less than 2MB')
         return
       }
 
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         this.showError('Please select an image file')
         return
@@ -805,10 +777,8 @@ export default {
 
       this.uploadingAvatar = true
       try {
-        // Simulate upload
         await new Promise(resolve => setTimeout(resolve, 2000))
 
-        // Create preview URL
         const reader = new FileReader()
         reader.onload = (e) => {
           this.userInfo.avatar = e.target.result
@@ -824,7 +794,6 @@ export default {
       }
     },
 
-    // Password Dialog Methods
     openPasswordDialog() {
       this.showPasswordDialog = true
     },
@@ -842,8 +811,6 @@ export default {
         newPassword: '',
         confirmPassword: ''
       }
-
-      // Reset forms
       if (this.$refs.verificationForm) {
         this.$refs.verificationForm.reset()
       }
@@ -859,10 +826,7 @@ export default {
       this.passwordError = ''
 
       try {
-        // Simulate API call to verify password
         await new Promise(resolve => setTimeout(resolve, 1500))
-
-        // For demo purposes, let's assume "password123" is the correct password
         if (this.currentPassword === 'password123') {
           this.passwordVerified = true
         } else {
@@ -881,7 +845,6 @@ export default {
       this.changingPassword = true
 
       try {
-        // Simulate API call to change password
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.showSuccess('Password changed successfully!')
@@ -896,7 +859,6 @@ export default {
     async saveAccountSettings() {
       this.savingSettings = true
       try {
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         this.showSuccess('Settings saved successfully!')
@@ -912,12 +874,9 @@ export default {
 
       this.deletingAccount = true
       try {
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.showSuccess('Account deleted successfully!')
-        // Redirect to login or home page
-        // this.$router.push('/login')
       } catch (error) {
         this.showError('Failed to delete account. Please try again.')
       } finally {
@@ -957,7 +916,6 @@ export default {
   border-radius: 8px;
 }
 
-/* Back Button Styles */
 .back-button-container {
   position: sticky;
   top: 16px;

@@ -4,7 +4,8 @@ const gettersConfig = {
     email: state => state.email,
     username: state => state.username,
     user_id: state => state.user_id,
-    tasks: state => state.tasks
+    tasks: state => state.tasks,
+    avata:state => state.tasks
 }
 
 export default gettersConfig

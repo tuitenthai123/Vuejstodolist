@@ -33,6 +33,8 @@ const actionsConfig = {
                 commit('SET_EMAIL', response?.data?.email);
                 commit('SET_USER_NAME', lowerUsername);
                 commit('SET_USER_ID',response?.data?.id)
+                commit('SET_AVATA_DATA',response?.data?.avata)
+                console.log(response?.data)
                 localStorage.setItem("token", response?.data?.token);
                 localStorage.setItem('user_info', JSON.stringify(datauser));
                 return true;

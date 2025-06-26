@@ -16,7 +16,10 @@ const mutationsConfig = {
     },
     SET_TASKS_DATA(state, status) {
         state.tasks = status
-    }
+    },
+    SET_AVATA_DATA(state, status) {
+        state.avata = status
+    },
 }
 
 export default mutationsConfig

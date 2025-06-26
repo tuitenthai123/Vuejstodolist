@@ -24,7 +24,8 @@ export default {
       return new Date(Date.now() - tzOffset).toISOString().substr(0, 10);
     },
     tasktoday() {
-      return this.tasks.filter(task => task.dueDate === this.today);
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      return tasksArr.filter(task => task && task.dueDate === this.today);
     },
     tasksnum() {
       return this.tasktoday.length;

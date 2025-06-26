@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
-// Component imports
 import LoginPage from '../components/LoginPage.vue'
 
 Vue.use(VueRouter)
@@ -16,11 +14,6 @@ const routes = [
     path: '/signup',
     name: 'SignUpPage',
     component: () => import('../components/SignUpPage.vue')
-  },
-  {
-    path: '/testing',
-    name: 'testing',
-    component: () => import('../components/HelloWorld.vue')
   },
   {
     path: '/setting/:iduser',

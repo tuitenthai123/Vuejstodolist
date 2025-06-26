@@ -342,7 +342,8 @@ export default {
     },
     filteredTasks() {
       const today = this.today;
-      let filtered = this.tasks.filter(task => {
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      let filtered = tasksArr.filter(task => {
         const categoryMatch = this.filters.category === 'All' || task.category === this.filters.category;
         const priorityMatch = this.filters.priority === 'All' || task.priority === this.filters.priority;
         const dateMatch = task.dueDate === today;
@@ -371,7 +372,8 @@ export default {
       });
     },
     todayTasks() {
-      return this.tasks.filter(task => task.dueDate === this.today);
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      return tasksArr.filter(task => task.dueDate === this.today);
     },
     todayCompletedTasks() {
       return this.todayTasks.filter(task => task.completed).length;
@@ -384,17 +386,20 @@ export default {
       return Math.round((this.todayCompletedTasks / this.todayTasks.length) * 100);
     },
     completedTasks() {
-      return this.tasks.filter(task => task.completed).length;
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      return tasksArr.filter(task => task.completed).length;
     },
     pendingTasks() {
-      return this.tasks.filter(task => !task.completed).length;
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      return tasksArr.filter(task => !task.completed).length;
     },
     progressPercentage() {
-      if (this.tasks.length === 0) return 0;
+      if (!Array.isArray(this.tasks) || this.tasks.length === 0) return 0;
       return Math.round((this.completedTasks / this.tasks.length) * 100);
     },
     tasksForSelectedDate() {
-      return this.tasks.filter(task => task.dueDate === this.selectedDate);
+      const tasksArr = Array.isArray(this.tasks) ? this.tasks : [];
+      return tasksArr.filter(task => task.dueDate === this.selectedDate);
     },
     selectedDateStats() {
       const tasksForDate = this.tasksForSelectedDate;
