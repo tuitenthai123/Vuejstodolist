@@ -126,6 +126,65 @@ const actionsConfig = {
         
     },
 
+    async _updateNewtask({commit},newtasksupdate) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const stringtask = JSON.stringify(newtasksupdate?.tasks)
+
+            const add_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/tasks/update-new-tasks`,
+                {
+                    newtasks: stringtask,
+                    user_id: newtasksupdate?.userid
+                },
+                config
+            );
+            
+            commit('SET_TASKS_DATA', newtasksupdate?.tasks);
+            if (add_status.data) return add_status.data;
+
+            return false;
+        } catch (error) {
+            return false;
+        }
+        
+    },
+
+    async _deleteNewtask({commit},newtasksupdate) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const stringtask = JSON.stringify(newtasksupdate?.tasks)
+
+            const add_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/tasks/delete-new-tasks`,
+                {
+                    newtasks: stringtask,
+                    user_id: newtasksupdate?.userid
+                },
+                config
+            );
+            
+            commit('SET_TASKS_DATA', newtasksupdate?.tasks);
+            if (add_status.data) return add_status.data;
+
+            return false;
+        } catch (error) {
+            return false;
+        }
+        
+    },
+
+
 
     //orther function
     _Logout({dispatch}) {

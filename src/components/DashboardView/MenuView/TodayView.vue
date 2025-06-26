@@ -335,7 +335,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["user_id","tasks"]),
+    ...mapGetters(["user_id", "tasks"]),
 
     today() {
       return new Date().toISOString().substr(0, 10);
@@ -345,8 +345,7 @@ export default {
       let filtered = this.tasks.filter(task => {
         const categoryMatch = this.filters.category === 'All' || task.category === this.filters.category;
         const priorityMatch = this.filters.priority === 'All' || task.priority === this.filters.priority;
-        const dateMatch = task.dueDate === today; // Only show tasks for today
-
+        const dateMatch = task.dueDate === today;
         return categoryMatch && priorityMatch && dateMatch;
       });
 
@@ -430,9 +429,9 @@ export default {
   },
 
   methods: {
-    ...mapActions(["_getDatatask","_addNewtask"]),
+    ...mapActions(["_getDatatask", "_addNewtask","_updateNewtask","_deleteNewtask"]),
 
-    async handleLoadingDataTask (){
+    async handleLoadingDataTask() {
       await this._getDatatask({
         userid: this.user_id
       })
@@ -490,7 +489,7 @@ export default {
         category: suggestion.category,
         priority: suggestion.priority,
         completed: false,
-        dueDate: this.today // Set to today's date
+        dueDate: this.today
       };
       const newtasksdata = {
         tasks: this.tasks,
@@ -513,19 +512,28 @@ export default {
     },
 
     deleteTask(taskId) {
-      this.tasks = this.tasks.filter(task => task.id !== taskId);
+      const newTasks = this.tasks.filter(task => task.id !== taskId);
+      const newtasksdata = {
+        tasks: newTasks,
+        userid: this.user_id
+      }
+      this._deleteNewtask(newtasksdata)
     },
 
     saveTask() {
       if (!this.formValid) return;
 
-      // If no due date is set, default to today
       if (!this.taskForm.dueDate) {
         this.taskForm.dueDate = this.today;
       }
 
       if (this.editingTask) {
         Object.assign(this.editingTask, this.taskForm);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       } else {
         const newTask = {
           id: Date.now(),
@@ -533,10 +541,16 @@ export default {
           completed: false
         };
         this.tasks.push(newTask);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._addNewtask(newtasksdata)
       }
 
       this.closeDialog();
     },
+    
     closeDialog() {
       this.showAddDialog = false;
       this.editingTask = null;
@@ -551,6 +565,7 @@ export default {
         this.$refs.taskForm.reset();
       }
     },
+
     onDateChange(date) {
       this.selectedDate = date;
     }

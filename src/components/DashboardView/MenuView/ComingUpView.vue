@@ -523,7 +523,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {  
   data() {
@@ -709,6 +709,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["_getDatatask", "_addNewtask","_updateNewtask","_deleteNewtask"]),
     getTodayDate() {
       return new Date().toISOString().substr(0, 10);
     },
@@ -948,7 +949,12 @@ export default {
       this.rescheduleDate = null;
     },
     deleteTask(taskId) {
-      this.tasks = this.tasks.filter(task => task.id !== taskId);
+      const newTasks = this.tasks.filter(task => task.id !== taskId);
+      const newtasksdata = {
+        tasks: newTasks,
+        userid: this.user_id
+      }
+      this._deleteNewtask(newtasksdata)
     },
     addTaskForSelectedDay() {
       this.taskForm.dueDate = this.selectedDay.fullDate;
@@ -959,6 +965,11 @@ export default {
 
       if (this.editingTask) {
         Object.assign(this.editingTask, this.taskForm);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       } else {
         const newTask = {
           id: Date.now(),
@@ -966,6 +977,11 @@ export default {
           completed: false
         };
         this.tasks.push(newTask);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._addNewtask(newtasksdata)
       }
 
       this.closeDialog();
