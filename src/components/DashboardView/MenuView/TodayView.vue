@@ -53,7 +53,7 @@
             <v-card style="width: 100%" class="pa-4" :class="{ 'task-completed': task.completed }">
               <v-row align="center">
                 <v-col cols="auto">
-                  <v-checkbox :value="task.completed" @click.stop="toggleTask(task.id)" color="primary" />
+                  <v-checkbox v-model="task.completed" @click.stop="toggleTask(task.id)" color="primary" />
                 </v-col>
                 <v-col>
                   <div class="d-flex flex-column align-start">
@@ -320,7 +320,7 @@ export default {
         priority: 'All',
         sortBy: 'Due date'
       },
-      selectedDate: new Date().toISOString().substr(0, 10),
+      selectedDate:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
       showAddDialog: false,
       editingTask: null,
       formValid: false,
@@ -338,7 +338,7 @@ export default {
     ...mapGetters(["user_id", "tasks"]),
 
     today() {
-      return new Date().toISOString().substr(0, 10);
+      return  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
     },
     filteredTasks() {
       const today = this.today;
@@ -478,6 +478,11 @@ export default {
       const taskIndex = this.tasks.findIndex(t => t.id === taskId);
       if (taskIndex !== -1) {
         this.$set(this.tasks[taskIndex], 'completed', !this.tasks[taskIndex].completed);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       }
     },
 

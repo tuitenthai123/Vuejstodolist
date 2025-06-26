@@ -523,7 +523,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters,mapActions } from "vuex";
 
 export default {  
   data() {
@@ -575,25 +575,27 @@ export default {
       const weeks = [];
       let currentWeek = [];
 
+      // Previous month days
       for (let i = 0; i < startDay; i++) {
         const prevDate = new Date(year, month, -(startDay - i - 1));
         currentWeek.push({
           date: prevDate.getDate(),
-          fullDate: prevDate.toISOString().substr(0, 10),
+          fullDate: this.formatDateToString(prevDate),
           isCurrentMonth: false,
           isToday: false
         });
       }
 
+      // Current month days
       for (let day = 1; day <= lastDay.getDate(); day++) {
         const date = new Date(year, month, day);
         const today = new Date();
-
+        
         currentWeek.push({
           date: day,
-          fullDate: date.toISOString().substr(0, 10),
+          fullDate: this.formatDateToString(date),
           isCurrentMonth: true,
-          isToday: date.toDateString() === today.toDateString()
+          isToday: this.formatDateToString(date) === this.formatDateToString(today)
         });
 
         if (currentWeek.length === 7) {
@@ -602,13 +604,14 @@ export default {
         }
       }
 
+      // Next month days
       if (currentWeek.length > 0) {
         const remainingDays = 7 - currentWeek.length;
         for (let i = 1; i <= remainingDays; i++) {
           const nextDate = new Date(year, month + 1, i);
           currentWeek.push({
             date: nextDate.getDate(),
-            fullDate: nextDate.toISOString().substr(0, 10),
+            fullDate: this.formatDateToString(nextDate),
             isCurrentMonth: false,
             isToday: false
           });
@@ -711,17 +714,33 @@ export default {
   methods: {
     ...mapActions(["_getDatatask", "_addNewtask","_updateNewtask","_deleteNewtask"]),
     getTodayDate() {
-      return new Date().toISOString().substr(0, 10);
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     },
     getTomorrowDate() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      return tomorrow.toISOString().substr(0, 10);
+      const year = tomorrow.getFullYear();
+      const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const day = String(tomorrow.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     },
     getDateAfterDays(days) {
       const date = new Date();
       date.setDate(date.getDate() + days);
-      return date.toISOString().substr(0, 10);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+    formatDateToString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     },
     formatCurrentMonth() {
       return this.currentDate.toLocaleDateString('en-US', {
@@ -918,6 +937,11 @@ export default {
       const taskIndex = this.tasks.findIndex(t => t.id === taskId);
       if (taskIndex !== -1) {
         this.$set(this.tasks[taskIndex], 'completed', completed);
+        const newtasksdata = {
+          tasks: this.tasks,
+          userid: this.user_id
+        }
+        this._updateNewtask(newtasksdata);
       }
     },
     editTask(task) {
@@ -942,6 +966,11 @@ export default {
         const taskIndex = this.tasks.findIndex(t => t.id === this.reschedulingTask.id);
         if (taskIndex !== -1) {
           this.$set(this.tasks[taskIndex], 'dueDate', this.rescheduleDate);
+          const newtasksdata = {
+            tasks: this.tasks,
+            userid: this.user_id
+          }
+          this._updateNewtask(newtasksdata);
         }
       }
       this.showRescheduleDialog = false;

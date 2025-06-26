@@ -7,15 +7,10 @@ export default {
   data() {
     return {
       group: null,
-      itemsmenu: [
-        {title: 'Today', icon: 'mdi-calendar-badge',tasknum:5,color:"green",route:"today"},
-        {title: 'Coming Up', icon: 'mdi-calendar-arrow-right',route:"comingup"},
-        {title: 'All Tasks', icon: 'mdi-format-list-bulleted',route:"all-tasks"},
-      ],
     }
   },
   computed: {
-    ...mapGetters(["drawer","email","username"]),
+    ...mapGetters(["drawer","email","username","tasks"]),
     drawerSync: {
       get() {
         return this.drawer;
@@ -23,6 +18,23 @@ export default {
       set(value) {
         this.SET_DRAWER_STATUS(value)
       }
+    },
+    today() {
+      const tzOffset = new Date().getTimezoneOffset() * 60000;
+      return new Date(Date.now() - tzOffset).toISOString().substr(0, 10);
+    },
+    tasktoday() {
+      return this.tasks.filter(task => task.dueDate === this.today);
+    },
+    tasksnum() {
+      return this.tasktoday.length;
+    },
+    itemsmenu() {
+      return [
+        {title: 'Today', icon: 'mdi-calendar-badge', tasknum: this.tasksnum, color: "green", route: "today"},
+        {title: 'Coming Up', icon: 'mdi-calendar-arrow-right', route: "comingup"},
+        {title: 'All Tasks', icon: 'mdi-format-list-bulleted', route: "all-tasks"},
+      ];
     }
   },
   methods: {

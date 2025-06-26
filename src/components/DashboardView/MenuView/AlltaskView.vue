@@ -732,7 +732,7 @@ export default {
       return 'grey--text'
     },
     getTodayDate() {
-      return new Date().toISOString().substr(0, 10)
+      return  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
     },
     getTomorrowDate() {
       const tomorrow = new Date()
@@ -764,12 +764,12 @@ export default {
     },
     isOverdue(task) {
       if (task.completed) return false
-      const today = new Date().toISOString().substr(0, 10)
+      const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       return task.dueDate < today
     },
     isDueToday(task) {
       if (task.completed) return false
-      const today = new Date().toISOString().substr(0, 10)
+      const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       return task.dueDate === today
     },
     isDueThisWeek(task) {
@@ -932,7 +932,7 @@ export default {
         priority: task.priority,
         completed: false,
         dueDate: task.dueDate,
-        createdAt: new Date().toISOString().substr(0, 10)
+        createdAt:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       }
       this.tasks.push(newTask)
     },
@@ -950,7 +950,7 @@ export default {
           id: Date.now(),
           ...this.taskForm,
           completed: false,
-          createdAt: new Date().toISOString().substr(0, 10)
+          createdAt:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
         }
         this.tasks.push(newTask)
       }

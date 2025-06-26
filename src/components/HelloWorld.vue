@@ -817,7 +817,7 @@ export default {
     search: '',
     dialog: false,
     dateMenu: false,
-    selectedDate: new Date().toISOString().substr(0, 10),
+    selectedDate:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
     groupCollapsed: {},
 
     // Filters
@@ -842,7 +842,7 @@ export default {
       description: '',
       category: '',
       priority: 'Medium',
-      dueDate: new Date().toISOString().substr(0, 10),
+      dueDate:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
       completed: false
     },
     defaultItem: {
@@ -851,7 +851,7 @@ export default {
       description: '',
       category: '',
       priority: 'Medium',
-      dueDate: new Date().toISOString().substr(0, 10),
+      dueDate:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
       completed: false
     },
 
@@ -1028,10 +1028,10 @@ export default {
 
       // Filter by view
       if (this.currentView === 'today') {
-        const today = new Date().toISOString().substr(0, 10);
+        const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
         filtered = filtered.filter(task => task.dueDate === today);
       } else if (this.currentView === 'upcoming') {
-        const today = new Date().toISOString().substr(0, 10);
+        const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
         filtered = filtered.filter(task => task.dueDate > today && !task.completed);
       } else if (this.currentView === 'important') {
         filtered = filtered.filter(task => task.priority === 'High' && !task.completed);
@@ -1083,7 +1083,7 @@ export default {
 
         if (this.groupBy === 'dueDate') {
           // Group by date status
-          const today = new Date().toISOString().substr(0, 10);
+          const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
           const tomorrow = new Date();
           tomorrow.setDate(tomorrow.getDate() + 1);
           const tomorrowStr = tomorrow.toISOString().substr(0, 10);
@@ -1158,7 +1158,7 @@ export default {
 
     isOverdue(dueDate) {
       if (!dueDate) return false;
-      const today = new Date().toISOString().substr(0, 10);
+      const today =  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
       return dueDate < today && !this.tasks.find(t => t.dueDate === dueDate)?.completed;
     },
 
@@ -1286,7 +1286,7 @@ export default {
         description: '',
         category: suggestion.category,
         priority: suggestion.priority,
-        dueDate: new Date().toISOString().substr(0, 10),
+        dueDate:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
         completed: false
       };
 

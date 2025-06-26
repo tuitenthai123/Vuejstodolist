@@ -29,7 +29,6 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'DashboardPage',
     component: () => import('../components/DashboardView/DashboardPage.vue'),
     meta: { requiresAuth: true },
     children: [
