@@ -1,6 +1,8 @@
 <template>
   <div class="pa-4">
-
+    <v-overlay :value="loading" absolute opacity="0.7">
+      <v-progress-circular indeterminate size="64" color="primary" />
+    </v-overlay>
 
     <v-container max-width="800px">
       <!-- Header -->
@@ -9,13 +11,7 @@
         <div>
           <!-- Back Button -->
           <div class="back-button-container mb-6">
-            <v-btn
-                class="back-button"
-                color="primary"
-                text
-                @click="goBack"
-                elevation="0"
-            >
+            <v-btn class="back-button" color="primary" text @click="goBack" elevation="0">
               <v-icon left>mdi-arrow-left</v-icon>
               Quay lại
             </v-btn>
@@ -39,31 +35,16 @@
         <v-card-text class="pa-6">
           <div class="d-flex align-center mb-6">
             <v-avatar size="80" class="mr-4">
-              <v-img
-                  v-if="userInfo.avatar"
-                  :src="userInfo.avatar"
-                  alt="User Avatar"
-              ></v-img>
+              <v-img v-if="userInfo.avatar || avata" :src="userInfo.avatar || avata" alt="User Avatar"></v-img>
               <v-icon v-else size="60" color="grey lighten-1">mdi-account</v-icon>
             </v-avatar>
             <div>
-              <v-btn
-                  color="primary"
-                  outlined
-                  small
-                  @click="$refs.avatarInput.click()"
-                  :loading="uploadingAvatar"
-              >
+              <v-btn color="primary" outlined small @click="$refs.avatarInput.click()" :loading="uploadingAvatar">
                 <v-icon left small>mdi-camera</v-icon>
                 Change Avatar
               </v-btn>
-              <input
-                  ref="avatarInput"
-                  type="file"
-                  accept="image/*"
-                  style="display: none"
-                  @change="handleAvatarUpload"
-              />
+              <input ref="avatarInput" type="file" accept="image/*" style="display: none"
+                @change="handleAvatarUpload" />
               <p class="text-caption grey--text mt-2 mb-0">
                 JPG, PNG or GIF. Max size 2MB.
               </p>
@@ -73,74 +54,34 @@
           <v-form ref="profileForm" v-model="profileFormValid">
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field
-                    v-model="profileForm.username"
-                    label="Username"
-                    :rules="usernameRules"
-                    outlined
-                    prepend-inner-icon="mdi-account"
-                    :disabled="!editingProfile"
-                    required
-                ></v-text-field>
+                <v-text-field v-model="profileForm.username" label="Username" :rules="usernameRules" outlined
+                  prepend-inner-icon="mdi-account" :disabled="!editingProfile" required></v-text-field>
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field
-                    v-model="profileForm.userId"
-                    label="User ID"
-                    outlined
-                    prepend-inner-icon="mdi-identifier"
-                    disabled
-                    hint="User ID cannot be changed"
-                    persistent-hint
-                ></v-text-field>
+                <v-text-field v-model="profileForm.userId" label="User ID" outlined prepend-inner-icon="mdi-identifier"
+                  disabled hint="User ID cannot be changed" persistent-hint></v-text-field>
               </v-col>
 
               <v-col cols="12">
-                <v-text-field
-                    v-model="profileForm.email"
-                    label="Email Address"
-                    :rules="emailRules"
-                    outlined
-                    prepend-inner-icon="mdi-email"
-                    :disabled="!editingProfile"
-                    required
-                ></v-text-field>
+                <v-text-field v-model="profileForm.email" label="Email Address" :rules="emailRules" outlined
+                  prepend-inner-icon="mdi-email" :disabled="!editingProfile" required></v-text-field>
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field
-                    v-model="profileForm.firstName"
-                    label="First Name"
-                    :rules="nameRules"
-                    outlined
-                    prepend-inner-icon="mdi-account-outline"
-                    :disabled="!editingProfile"
-                ></v-text-field>
+                <v-text-field v-model="profileForm.firstName" label="First Name" :rules="nameRules" outlined
+                  prepend-inner-icon="mdi-account-outline" :disabled="!editingProfile"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field
-                    v-model="profileForm.lastName"
-                    label="Last Name"
-                    :rules="nameRules"
-                    outlined
-                    prepend-inner-icon="mdi-account-outline"
-                    :disabled="!editingProfile"
-                ></v-text-field>
+                <v-text-field v-model="profileForm.lastName" label="Last Name" :rules="nameRules" outlined
+                  prepend-inner-icon="mdi-account-outline" :disabled="!editingProfile"></v-text-field>
               </v-col>
 
               <v-col cols="12">
-                <v-textarea
-                    v-model="profileForm.bio"
-                    label="Bio (Optional)"
-                    outlined
-                    rows="3"
-                    prepend-inner-icon="mdi-text"
-                    :disabled="!editingProfile"
-                    counter="200"
-                    :rules="bioRules"
-                ></v-textarea>
+                <v-textarea v-model="profileForm.bio" label="Bio (Optional)" outlined rows="3"
+                  prepend-inner-icon="mdi-text" :disabled="!editingProfile" counter="200"
+                  :rules="bioRules"></v-textarea>
               </v-col>
             </v-row>
           </v-form>
@@ -150,27 +91,15 @@
 
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-          <v-btn
-              v-if="!editingProfile"
-              color="primary"
-              @click="startEditingProfile"
-          >
+          <v-btn v-if="!editingProfile" color="primary" @click="startEditingProfile">
             <v-icon left>mdi-pencil</v-icon>
             Edit Profile
           </v-btn>
           <template v-else>
-            <v-btn
-                text
-                @click="cancelEditingProfile"
-            >
+            <v-btn text @click="cancelEditingProfile">
               Cancel
             </v-btn>
-            <v-btn
-                color="primary"
-                @click="saveProfile"
-                :disabled="!profileFormValid"
-                :loading="savingProfile"
-            >
+            <v-btn color="primary" @click="saveProfile" :disabled="!profileFormValid" :loading="savingProfile">
               <v-icon left>mdi-content-save</v-icon>
               Save Changes
             </v-btn>
@@ -194,86 +123,12 @@
                 It's a good idea to use a strong password that you don't use elsewhere
               </p>
             </div>
-            <v-btn
-                color="primary"
-                @click="openPasswordDialog"
-            >
+            <v-btn color="primary" @click="openPasswordDialog">
               <v-icon left>mdi-lock-reset</v-icon>
               Change Password
             </v-btn>
           </div>
         </v-card-text>
-      </v-card>
-
-      <v-card class="mb-6" elevation="2">
-        <v-card-title class="d-flex align-center">
-          <v-icon color="primary" class="mr-3">mdi-cog</v-icon>
-          <span class="text-h6">Account Settings</span>
-        </v-card-title>
-
-        <v-divider></v-divider>
-
-        <v-card-text class="pa-6">
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-select
-                  v-model="accountSettings.language"
-                  :items="languageOptions"
-                  label="Language"
-                  outlined
-                  prepend-inner-icon="mdi-translate"
-              ></v-select>
-            </v-col>
-
-            <v-col cols="12" md="6">
-              <v-select
-                  v-model="accountSettings.timezone"
-                  :items="timezoneOptions"
-                  label="Timezone"
-                  outlined
-                  prepend-inner-icon="mdi-clock"
-              ></v-select>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <h4 class="text-subtitle-1 mb-3">Notifications</h4>
-              <v-switch
-                  v-model="accountSettings.emailNotifications"
-                  label="Email notifications"
-                  color="primary"
-                  inset
-              ></v-switch>
-              <v-switch
-                  v-model="accountSettings.pushNotifications"
-                  label="Push notifications"
-                  color="primary"
-                  inset
-              ></v-switch>
-              <v-switch
-                  v-model="accountSettings.taskReminders"
-                  label="Task reminders"
-                  color="primary"
-                  inset
-              ></v-switch>
-            </v-col>
-          </v-row>
-        </v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-actions class="pa-4">
-          <v-spacer></v-spacer>
-          <v-btn
-              color="primary"
-              @click="saveAccountSettings"
-              :loading="savingSettings"
-          >
-            <v-icon left>mdi-content-save</v-icon>
-            Save Settings
-          </v-btn>
-        </v-card-actions>
       </v-card>
 
       <v-card elevation="2" class="border-error">
@@ -292,11 +147,7 @@
                 Once you delete your account, there is no going back. Please be certain.
               </p>
             </div>
-            <v-btn
-                color="error"
-                outlined
-                @click="showDeleteDialog = true"
-            >
+            <v-btn color="error" outlined @click="showDeleteDialog = true">
               <v-icon left>mdi-delete</v-icon>
               Delete Account
             </v-btn>
@@ -320,32 +171,17 @@
 
         <div v-if="!passwordVerified">
           <v-card-text class="pa-6">
-            <v-alert
-                type="info"
-                text
-                dense
-                class="mb-4"
-            >
+            <v-alert type="info" text dense class="mb-4">
               <v-icon left>mdi-shield-lock</v-icon>
               Please enter your current password to verify your identity
             </v-alert>
 
             <v-form ref="verificationForm" v-model="verificationFormValid" @submit.prevent="verifyPassword">
-              <v-text-field
-                  v-model="currentPassword"
-                  label="Current Password"
-                  :type="showCurrentPassword ? 'text' : 'password'"
-                  :rules="currentPasswordRules"
-                  outlined
-                  prepend-inner-icon="mdi-lock"
-                  :append-icon="showCurrentPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append="showCurrentPassword = !showCurrentPassword"
-                  :error-messages="passwordError"
-                  required
-                  autocomplete="current-password"
-                  @keyup.enter="verifyPassword"
-                  autofocus
-              ></v-text-field>
+              <v-text-field v-model="currentPassword" label="Current Password"
+                :type="showCurrentPassword ? 'text' : 'password'" :rules="currentPasswordRules" outlined
+                prepend-inner-icon="mdi-lock" :append-icon="showCurrentPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="showCurrentPassword = !showCurrentPassword" :error-messages="passwordError" required
+                autocomplete="current-password" @keyup.enter="verifyPassword" autofocus></v-text-field>
             </v-form>
           </v-card-text>
 
@@ -356,12 +192,7 @@
               Cancel
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn
-                color="primary"
-                @click="verifyPassword"
-                :disabled="!verificationFormValid"
-                :loading="verifying"
-            >
+            <v-btn color="primary" @click="verifyPassword" :disabled="!verificationFormValid" :loading="verifying">
               <v-icon left>mdi-shield-check</v-icon>
               Verify
             </v-btn>
@@ -370,12 +201,7 @@
 
         <div v-else>
           <v-card-text class="pa-6">
-            <v-alert
-                type="success"
-                text
-                dense
-                class="mb-4"
-            >
+            <v-alert type="success" text dense class="mb-4">
               <v-icon left>mdi-check-circle</v-icon>
               Identity verified successfully. You can now set a new password.
             </v-alert>
@@ -383,34 +209,19 @@
             <v-form ref="passwordForm" v-model="passwordFormValid" @submit.prevent="changePassword">
               <v-row>
                 <v-col cols="12">
-                  <v-text-field
-                      v-model="passwordForm.newPassword"
-                      label="New Password"
-                      :type="showNewPassword ? 'text' : 'password'"
-                      :rules="newPasswordRules"
-                      outlined
-                      prepend-inner-icon="mdi-lock-plus"
-                      :append-icon="showNewPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click:append="showNewPassword = !showNewPassword"
-                      required
-                      autocomplete="new-password"
-                  ></v-text-field>
+                  <v-text-field v-model="passwordForm.newPassword" label="New Password"
+                    :type="showNewPassword ? 'text' : 'password'" :rules="newPasswordRules" outlined
+                    prepend-inner-icon="mdi-lock-plus" :append-icon="showNewPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showNewPassword = !showNewPassword" required
+                    autocomplete="new-password"></v-text-field>
                 </v-col>
 
                 <v-col cols="12">
-                  <v-text-field
-                      v-model="passwordForm.confirmPassword"
-                      label="Confirm New Password"
-                      :type="showConfirmPassword ? 'text' : 'password'"
-                      :rules="confirmPasswordRules"
-                      outlined
-                      prepend-inner-icon="mdi-lock-check"
-                      :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click:append="showConfirmPassword = !showConfirmPassword"
-                      required
-                      autocomplete="new-password"
-                      @keyup.enter="changePassword"
-                  ></v-text-field>
+                  <v-text-field v-model="passwordForm.confirmPassword" label="Confirm New Password"
+                    :type="showConfirmPassword ? 'text' : 'password'" :rules="confirmPasswordRules" outlined
+                    prepend-inner-icon="mdi-lock-check" :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showConfirmPassword = !showConfirmPassword" required autocomplete="new-password"
+                    @keyup.enter="changePassword"></v-text-field>
                 </v-col>
               </v-row>
 
@@ -421,12 +232,8 @@
                     {{ passwordStrengthText }}
                   </span>
                 </div>
-                <v-progress-linear
-                    :value="passwordStrengthValue"
-                    :color="passwordStrengthColor.replace('--text', '')"
-                    height="4"
-                    rounded
-                ></v-progress-linear>
+                <v-progress-linear :value="passwordStrengthValue" :color="passwordStrengthColor.replace('--text', '')"
+                  height="4" rounded></v-progress-linear>
               </div>
 
               <v-card outlined class="mb-4">
@@ -436,48 +243,28 @@
                     <span class="text-subtitle-2">Password Requirements</span>
                   </div>
                   <div class="d-flex flex-wrap">
-                    <v-chip
-                        class="ma-1"
-                        small
-                        :color="hasMinLength ? 'success' : 'grey lighten-1'"
-                        :text-color="hasMinLength ? 'white' : ''"
-                    >
+                    <v-chip class="ma-1" small :color="hasMinLength ? 'success' : 'grey lighten-1'"
+                      :text-color="hasMinLength ? 'white' : ''">
                       <v-icon left x-small>{{ hasMinLength ? 'mdi-check' : 'mdi-close' }}</v-icon>
                       8+ characters
                     </v-chip>
-                    <v-chip
-                        class="ma-1"
-                        small
-                        :color="hasUppercase ? 'success' : 'grey lighten-1'"
-                        :text-color="hasUppercase ? 'white' : ''"
-                    >
+                    <v-chip class="ma-1" small :color="hasUppercase ? 'success' : 'grey lighten-1'"
+                      :text-color="hasUppercase ? 'white' : ''">
                       <v-icon left x-small>{{ hasUppercase ? 'mdi-check' : 'mdi-close' }}</v-icon>
                       Uppercase
                     </v-chip>
-                    <v-chip
-                        class="ma-1"
-                        small
-                        :color="hasLowercase ? 'success' : 'grey lighten-1'"
-                        :text-color="hasLowercase ? 'white' : ''"
-                    >
+                    <v-chip class="ma-1" small :color="hasLowercase ? 'success' : 'grey lighten-1'"
+                      :text-color="hasLowercase ? 'white' : ''">
                       <v-icon left x-small>{{ hasLowercase ? 'mdi-check' : 'mdi-close' }}</v-icon>
                       Lowercase
                     </v-chip>
-                    <v-chip
-                        class="ma-1"
-                        small
-                        :color="hasNumber ? 'success' : 'grey lighten-1'"
-                        :text-color="hasNumber ? 'white' : ''"
-                    >
+                    <v-chip class="ma-1" small :color="hasNumber ? 'success' : 'grey lighten-1'"
+                      :text-color="hasNumber ? 'white' : ''">
                       <v-icon left x-small>{{ hasNumber ? 'mdi-check' : 'mdi-close' }}</v-icon>
                       Number
                     </v-chip>
-                    <v-chip
-                        class="ma-1"
-                        small
-                        :color="hasSpecialChar ? 'success' : 'grey lighten-1'"
-                        :text-color="hasSpecialChar ? 'white' : ''"
-                    >
+                    <v-chip class="ma-1" small :color="hasSpecialChar ? 'success' : 'grey lighten-1'"
+                      :text-color="hasSpecialChar ? 'white' : ''">
                       <v-icon left x-small>{{ hasSpecialChar ? 'mdi-check' : 'mdi-close' }}</v-icon>
                       Special character
                     </v-chip>
@@ -495,12 +282,7 @@
               Back
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn
-                color="primary"
-                @click="changePassword"
-                :disabled="!passwordFormValid"
-                :loading="changingPassword"
-            >
+            <v-btn color="primary" @click="changePassword" :disabled="!passwordFormValid" :loading="changingPassword">
               <v-icon left>mdi-lock-reset</v-icon>
               Change Password
             </v-btn>
@@ -509,22 +291,12 @@
       </v-card>
     </v-dialog>
 
-    <v-snackbar
-        v-model="showSuccessSnackbar"
-        color="success"
-        timeout="3000"
-        bottom
-    >
+    <v-snackbar v-model="showSuccessSnackbar" color="success" timeout="3000" bottom>
       <v-icon left>mdi-check-circle</v-icon>
       {{ successMessage }}
     </v-snackbar>
 
-    <v-snackbar
-        v-model="showErrorSnackbar"
-        color="error"
-        timeout="5000"
-        bottom
-    >
+    <v-snackbar v-model="showErrorSnackbar" color="error" timeout="5000" bottom>
       <v-icon left>mdi-alert-circle</v-icon>
       {{ errorMessage }}
     </v-snackbar>
@@ -539,22 +311,14 @@
           <p class="mb-3">
             Are you sure you want to delete your account? This action cannot be undone.
           </p>
-          <v-text-field
-              v-model="deleteConfirmation"
-              label="Type 'DELETE' to confirm"
-              outlined
-              :rules="deleteConfirmationRules"
-          ></v-text-field>
+          <v-text-field v-model="deleteConfirmation" label="Type 'DELETE' to confirm" outlined
+            :rules="deleteConfirmationRules"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text @click="showDeleteDialog = false">Cancel</v-btn>
-          <v-btn
-              color="error"
-              @click="deleteAccount"
-              :disabled="deleteConfirmation !== 'DELETE'"
-              :loading="deletingAccount"
-          >
+          <v-btn color="error" @click="deleteAccount" :disabled="deleteConfirmation !== 'DELETE'"
+            :loading="deletingAccount">
             Delete Account
           </v-btn>
         </v-card-actions>
@@ -564,10 +328,14 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: 'SettingsPage',
   data() {
     return {
+
+      loading: false,
+
       userInfo: {
         username: 'john_doe',
         userId: 'USR_123456789',
@@ -575,7 +343,7 @@ export default {
         firstName: 'John',
         lastName: 'Doe',
         bio: 'Software developer passionate about creating amazing user experiences.',
-        avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"
+        avatar: ""
       },
 
       profileForm: {},
@@ -609,21 +377,6 @@ export default {
         taskReminders: true
       },
       savingSettings: false,
-
-      languageOptions: [
-        'English',
-        'Tiếng Việt',
-        'Français',
-        'Español',
-        'Deutsch'
-      ],
-      timezoneOptions: [
-        'UTC+7 (Asia/Ho_Chi_Minh)',
-        'UTC+0 (GMT)',
-        'UTC-5 (EST)',
-        'UTC-8 (PST)',
-        'UTC+1 (CET)'
-      ],
 
       showSuccessSnackbar: false,
       showErrorSnackbar: false,
@@ -667,6 +420,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["user_id", "avata", "username", "email"]),
     confirmPasswordRules() {
       return [
         v => !!v || 'Please confirm your password',
@@ -719,9 +473,11 @@ export default {
     }
   },
   created() {
+    this.userInfo.avatar = this.avata;
     this.initializeProfileForm()
   },
   methods: {
+    ...mapActions(["_uploadAvatar"]),
     goBack() {
       if (this.$router) {
         this.$router.back()
@@ -775,22 +531,31 @@ export default {
         return
       }
 
+      this.loading = true
+
       this.uploadingAvatar = true
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000))
-
         const reader = new FileReader()
-        reader.onload = (e) => {
-          this.userInfo.avatar = e.target.result
-          this.profileForm.avatar = e.target.result
+        reader.onload = async (e) => {
+          const base64 = e.target.result
+          this.userInfo.avatar = base64
+          this.profileForm.avatar = base64
+          const infoavata = {
+            avataurl: base64,
+            userid: this.user_id
+          }
+          await this._uploadAvatar(infoavata)
+
+          this.showSuccess('Avatar updated successfully!')
+          this.uploadingAvatar = false
+          this.loading = false
         }
         reader.readAsDataURL(file)
-
-        this.showSuccess('Avatar updated successfully!')
       } catch (error) {
         this.showError('Failed to upload avatar. Please try again.')
       } finally {
         this.uploadingAvatar = false
+        this.loading = false
       }
     },
 
@@ -895,7 +660,7 @@ export default {
       this.errorMessage = message
       this.showErrorSnackbar = true
     }
-  }
+  },
 }
 </script>
 
@@ -912,14 +677,14 @@ export default {
   border-radius: 8px;
 }
 
-.v-text-field, .v-textarea, .v-select {
+.v-text-field,
+.v-textarea,
+.v-select {
   border-radius: 8px;
 }
 
 .back-button-container {
-  position: sticky;
   top: 16px;
-  z-index: 1;
 }
 
 .back-button {
@@ -927,9 +692,6 @@ export default {
   transition: transform 0.2s ease;
 }
 
-.back-button:hover {
-  transform: translateX(-4px);
-}
 
 @media (max-width: 600px) {
   .back-button-container {

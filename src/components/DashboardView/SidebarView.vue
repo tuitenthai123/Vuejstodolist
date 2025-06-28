@@ -10,7 +10,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["drawer","email","username","tasks"]),
+    ...mapGetters(["drawer","email","username","tasks","avata"]),
     drawerSync: {
       get() {
         return this.drawer;
@@ -69,7 +69,7 @@ export default {
         >
           <img
               alt="Avatar"
-              src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"
+              :src=this.avata
           >
         </v-avatar>
         <div class="d-flex flex-column justify-start">

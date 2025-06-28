@@ -53,7 +53,7 @@
             <v-card style="width: 100%" class="pa-4" :class="{ 'task-completed': task.completed }">
               <v-row align="center">
                 <v-col cols="auto">
-                  <v-checkbox v-model="task.completed" @click.stop="toggleTask(task.id)" color="primary" />
+                  <v-checkbox :input-value="task.completed" @click.stop="toggleTask(task.id)" color="primary" />
                 </v-col>
                 <v-col>
                   <div class="d-flex flex-column align-start">

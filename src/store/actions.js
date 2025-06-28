@@ -32,9 +32,8 @@ const actionsConfig = {
                 commit('SET_LOGIN_STATUS', true);
                 commit('SET_EMAIL', response?.data?.email);
                 commit('SET_USER_NAME', lowerUsername);
-                commit('SET_USER_ID',response?.data?.id)
-                commit('SET_AVATA_DATA',response?.data?.avata)
-                console.log(response?.data)
+                commit('SET_USER_ID', response?.data?.id)
+                commit('SET_AVATA_DATA', response?.data?.avata)
                 localStorage.setItem("token", response?.data?.token);
                 localStorage.setItem('user_info', JSON.stringify(datauser));
                 return true;
@@ -71,8 +70,7 @@ const actionsConfig = {
     },
 
     //load data function
-
-    async _getDatatask({commit}, infouser) {
+    async _getDatatask({ commit }, infouser) {
         try {
             const config = {
                 headers: {
@@ -82,23 +80,23 @@ const actionsConfig = {
 
             const response = await axios.post(
                 `${process.env.VUE_APP_SERVER_URL}/api/tasks/load-task`,
-                {userid:infouser?.userid},
+                { userid: infouser?.userid },
                 config
             );
-            const tasksdata =  response?.data?.taskdata[0]?.tasks
+            const tasksdata = response?.data?.taskdata[0]?.tasks
 
-            tasksdata ? commit('SET_TASKS_DATA',JSON.parse(tasksdata)) : commit('SET_TASKS_DATA',JSON.parse("[]"));
-        
+            tasksdata ? commit('SET_TASKS_DATA', JSON.parse(tasksdata)) : commit('SET_TASKS_DATA', JSON.parse("[]"));
+
             if (response.data) return response.data;
 
             return false;
         } catch (error) {
             return false;
         }
-        
+
     },
 
-    async _addNewtask({commit}, newtasksdata) {
+    async _addNewtask({ commit }, newtasksdata) {
         try {
             const config = {
                 headers: {
@@ -116,8 +114,7 @@ const actionsConfig = {
                 },
                 config
             );
-            console.log(add_status)
-            
+
             commit('SET_TASKS_DATA', newtasksdata?.tasks);
             if (add_status.data) return add_status.data;
 
@@ -125,10 +122,10 @@ const actionsConfig = {
         } catch (error) {
             return false;
         }
-        
+
     },
 
-    async _updateNewtask({commit},newtasksupdate) {
+    async _updateNewtask({ commit }, newtasksupdate) {
         try {
             const config = {
                 headers: {
@@ -146,7 +143,7 @@ const actionsConfig = {
                 },
                 config
             );
-            
+
             commit('SET_TASKS_DATA', newtasksupdate?.tasks);
             if (add_status.data) return add_status.data;
 
@@ -154,10 +151,10 @@ const actionsConfig = {
         } catch (error) {
             return false;
         }
-        
+
     },
 
-    async _deleteNewtask({commit},newtasksupdate) {
+    async _deleteNewtask({ commit }, newtasksupdate) {
         try {
             const config = {
                 headers: {
@@ -175,7 +172,7 @@ const actionsConfig = {
                 },
                 config
             );
-            
+
             commit('SET_TASKS_DATA', newtasksupdate?.tasks);
             if (add_status.data) return add_status.data;
 
@@ -183,13 +180,38 @@ const actionsConfig = {
         } catch (error) {
             return false;
         }
-        
+
+    },
+
+    //setting function
+
+    async _uploadAvatar({commit}, infoavatar) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const avata = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/setting/update-avata`,
+                {
+                    infoavata:infoavatar
+                },
+                config
+            );
+            console.log(avata)
+            commit('SET_AVATA_DATA', avata?.data?.message?.urlavata)
+            return false;
+        } catch (error) {
+            return false;
+        }
     },
 
 
 
     //orther function
-    _Logout({dispatch}) {
+    _Logout({ dispatch }) {
         dispatch('_Clearstate')
         localStorage.clear();
     },
@@ -198,13 +220,13 @@ const actionsConfig = {
         commit('SET_DRAWER_STATUS', true);
     },
 
-    _Clearstate({ commit }){
-        commit('SET_LOGIN_STATUS',false);
-        commit('SET_DRAWER_STATUS',false);
-        commit('SET_EMAIL','');
-        commit('SET_USER_NAME','');
-        commit('SET_USER_ID','');
-        commit('SET_TASKS_DATA','');
+    _Clearstate({ commit }) {
+        commit('SET_LOGIN_STATUS', false);
+        commit('SET_DRAWER_STATUS', false);
+        commit('SET_EMAIL', '');
+        commit('SET_USER_NAME', '');
+        commit('SET_USER_ID', '');
+        commit('SET_TASKS_DATA', '');
     },
 }
 
