@@ -44,9 +44,6 @@ const actionsConfig = {
         }
     },
 
-
-
-
     async _Signup(context, infouser) {
         try {
             const config = {
@@ -61,9 +58,26 @@ const actionsConfig = {
                 config
             );
 
-            if (response.data) return true;
+            switch (response.data?.message) {
+                case true:
+                    return {
+                        noti: "Now you can use your account",
+                        status: "success"
+                    }
+                case false:
+                    return {
+                        noti: "Create failed. Please check your credentials.",
+                        status: "error"
+                    }
+                case "exist":
+                    return {
+                        noti: "Your email is already exist. Please check again or use another email.",
+                        status: "error"
+                    }
+                default:
+                    break;
+            }
 
-            return false;
         } catch (error) {
             return false;
         }
@@ -184,8 +198,7 @@ const actionsConfig = {
     },
 
     //setting function
-
-    async _uploadAvatar({commit}, infoavatar) {
+    async _uploadAvatar({ commit }, infoavatar) {
         try {
             const config = {
                 headers: {
@@ -196,19 +209,82 @@ const actionsConfig = {
             const avata = await axios.post(
                 `${process.env.VUE_APP_SERVER_URL}/api/setting/update-avata`,
                 {
-                    infoavata:infoavatar
+                    infoavata: infoavatar
                 },
                 config
             );
-            console.log(avata)
             commit('SET_AVATA_DATA', avata?.data?.message?.urlavata)
             return false;
         } catch (error) {
             return false;
         }
     },
+    async _verifyPassword(context, verifyinfo) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
 
+            const verify_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/setting/verify-password`,
+                {
+                    verifyinfo
+                },
+                config
+            );
+            return verify_status?.data?.message
+        } catch (error) {
+            return false;
+        }
+    },
 
+    async _changePassword(context, changepassinfo) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const change_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/setting/change-password`,
+                {
+                    changepassinfo
+                },
+                config
+            );
+            return change_status?.data?.message
+        } catch (error) {
+            return false;
+        }
+    },
+
+    async _deleteAccount({ dispatch }, userid) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const delete_status = await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/setting/delete-account`,
+                {
+                    userid
+                },
+                config
+            );
+            if (delete_status?.data?.message) {
+                dispatch('_Clearstate')
+                localStorage.clear();
+            }
+            return delete_status?.data?.message
+        } catch (error) {
+            return false;
+        }
+    },
 
     //orther function
     _Logout({ dispatch }) {

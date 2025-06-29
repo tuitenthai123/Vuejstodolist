@@ -11,11 +11,11 @@
             <form @submit.prevent="handleSignUp">
               <v-card-text class="px-8 pt-8">
                 <v-text-field v-model="email" :rules="emailRules" required label="Email" prepend-icon="mdi-account"
-                  hide-details class="mb-6" @keyup.enter="handleSignUp"></v-text-field>
+                  hide-details class="mb-6"></v-text-field>
 
                 <v-text-field v-model="password" label="Password" :type="showPassword ? 'text' : 'password'"
                   prepend-icon="mdi-lock" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append="showPassword = !showPassword" hide-details required class="mb-6"  @keyup.enter="handleSignUp"></v-text-field>
+                  @click:append="showPassword = !showPassword" hide-details required class="mb-6"></v-text-field>
 
                 <v-btn block color="primary" height="44" rounded elevation="2" class="mb-8" type="submit">
                   SIGN UP
@@ -62,14 +62,21 @@ export default {
     snackbarColor: 'success',
     emailRules: [
       v => !!v || 'E-mail is required',
-      v => /.+@.+/.test(v) || 'E-mail must be valid',
+      v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
     ],
   }),
   methods: {
     ...mapActions(["_Signup"]),
     async handleSignUp() {
+
       if (!this.email || !this.password) {
         this.showSnackbar('Please enter email and password', 'error');
+        return;
+      }
+      
+      const emailValid = this.emailRules.every(rule => rule(this.email) === true);
+      if (!emailValid) {
+        this.showSnackbar('E-mail must be valid', 'error');
         return;
       }
 
@@ -78,15 +85,16 @@ export default {
           email: this.email,
           id: generateRandomName(10),
           username: `user_${generateRandomName(10)}`,
-          password: this.password
+          password: this.password,
         }
       )
-      if (response) {
-        this.showSnackbar('Now you can use your account', 'success');
+
+      if (response?.status == "success") {
+        this.showSnackbar(response?.noti, response?.status);
         await sleep(2000);
-        this.$router.push('/').catch(()=>{});
+        this.$router.push('/').catch(() => { });
       } else {
-        this.showSnackbar('Create failed. Please check your credentials.', 'error');
+        this.showSnackbar(response?.noti, response?.status);
       }
     },
     showSnackbar(text, color) {

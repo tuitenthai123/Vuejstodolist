@@ -7,7 +7,6 @@
     <v-container max-width="800px">
       <!-- Header -->
       <div class="mb-6 d-flex align-center">
-
         <div>
           <!-- Back Button -->
           <div class="back-button-container mb-6">
@@ -23,15 +22,12 @@
         </div>
       </div>
 
-
       <v-card class="mb-6" elevation="2">
         <v-card-title class="d-flex align-center">
           <v-icon color="primary" class="mr-3">mdi-account-circle</v-icon>
           <span class="text-h6">Profile Information</span>
         </v-card-title>
-
         <v-divider></v-divider>
-
         <v-card-text class="pa-6">
           <div class="d-flex align-center mb-6">
             <v-avatar size="80" class="mr-4">
@@ -55,29 +51,24 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field v-model="profileForm.username" label="Username" :rules="usernameRules" outlined
-                  prepend-inner-icon="mdi-account" :disabled="!editingProfile" required></v-text-field>
+                  prepend-inner-icon="mdi-account" disabled required></v-text-field>
               </v-col>
-
               <v-col cols="12" md="6">
                 <v-text-field v-model="profileForm.userId" label="User ID" outlined prepend-inner-icon="mdi-identifier"
                   disabled hint="User ID cannot be changed" persistent-hint></v-text-field>
               </v-col>
-
               <v-col cols="12">
                 <v-text-field v-model="profileForm.email" label="Email Address" :rules="emailRules" outlined
                   prepend-inner-icon="mdi-email" :disabled="!editingProfile" required></v-text-field>
               </v-col>
-
               <v-col cols="12" md="6">
                 <v-text-field v-model="profileForm.firstName" label="First Name" :rules="nameRules" outlined
                   prepend-inner-icon="mdi-account-outline" :disabled="!editingProfile"></v-text-field>
               </v-col>
-
               <v-col cols="12" md="6">
                 <v-text-field v-model="profileForm.lastName" label="Last Name" :rules="nameRules" outlined
                   prepend-inner-icon="mdi-account-outline" :disabled="!editingProfile"></v-text-field>
               </v-col>
-
               <v-col cols="12">
                 <v-textarea v-model="profileForm.bio" label="Bio (Optional)" outlined rows="3"
                   prepend-inner-icon="mdi-text" :disabled="!editingProfile" counter="200"
@@ -88,7 +79,6 @@
         </v-card-text>
 
         <v-divider></v-divider>
-
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
           <v-btn v-if="!editingProfile" color="primary" @click="startEditingProfile">
@@ -99,7 +89,8 @@
             <v-btn text @click="cancelEditingProfile">
               Cancel
             </v-btn>
-            <v-btn color="primary" @click="saveProfile" :disabled="!profileFormValid" :loading="savingProfile">
+            <v-btn color="primary" @click="saveProfile" :disabled="!hasProfileChanges || !isProfileValid"
+              :loading="savingProfile">
               <v-icon left>mdi-content-save</v-icon>
               Save Changes
             </v-btn>
@@ -112,9 +103,7 @@
           <v-icon color="primary" class="mr-3">mdi-lock</v-icon>
           <span class="text-h6">Password</span>
         </v-card-title>
-
         <v-divider></v-divider>
-
         <v-card-text class="pa-6">
           <div class="d-flex justify-space-between align-center">
             <div>
@@ -136,9 +125,7 @@
           <v-icon color="error" class="mr-3">mdi-alert-circle</v-icon>
           <span class="text-h6">Danger Zone</span>
         </v-card-title>
-
         <v-divider></v-divider>
-
         <v-card-text class="pa-6">
           <div class="d-flex justify-space-between align-center">
             <div>
@@ -156,6 +143,7 @@
       </v-card>
     </v-container>
 
+    <!-- Password Dialog -->
     <v-dialog v-model="showPasswordDialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="d-flex align-center">
@@ -166,7 +154,6 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
-
         <v-divider></v-divider>
 
         <div v-if="!passwordVerified">
@@ -186,7 +173,6 @@
           </v-card-text>
 
           <v-divider></v-divider>
-
           <v-card-actions class="pa-4">
             <v-btn text @click="closePasswordDialog">
               Cancel
@@ -215,7 +201,6 @@
                     @click:append="showNewPassword = !showNewPassword" required
                     autocomplete="new-password"></v-text-field>
                 </v-col>
-
                 <v-col cols="12">
                   <v-text-field v-model="passwordForm.confirmPassword" label="Confirm New Password"
                     :type="showConfirmPassword ? 'text' : 'password'" :rules="confirmPasswordRules" outlined
@@ -275,7 +260,6 @@
           </v-card-text>
 
           <v-divider></v-divider>
-
           <v-card-actions class="pa-4">
             <v-btn text @click="resetPasswordVerification">
               <v-icon left>mdi-arrow-left</v-icon>
@@ -291,6 +275,7 @@
       </v-card>
     </v-dialog>
 
+    <!-- Snackbars -->
     <v-snackbar v-model="showSuccessSnackbar" color="success" timeout="3000" bottom>
       <v-icon left>mdi-check-circle</v-icon>
       {{ successMessage }}
@@ -301,6 +286,7 @@
       {{ errorMessage }}
     </v-snackbar>
 
+    <!-- Delete Account Dialog -->
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="error--text">
@@ -329,13 +315,12 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: 'SettingsPage',
   data() {
     return {
-
       loading: false,
-
       userInfo: {
         username: 'john_doe',
         userId: 'USR_123456789',
@@ -345,13 +330,14 @@ export default {
         bio: 'Software developer passionate about creating amazing user experiences.',
         avatar: ""
       },
-
       profileForm: {},
+      originalProfileForm: {},
       profileFormValid: false,
       editingProfile: false,
       savingProfile: false,
       uploadingAvatar: false,
 
+      // Password dialog
       showPasswordDialog: false,
       passwordVerified: false,
       verifying: false,
@@ -359,7 +345,6 @@ export default {
       currentPassword: '',
       passwordError: '',
       showCurrentPassword: false,
-
       passwordForm: {
         newPassword: '',
         confirmPassword: ''
@@ -369,29 +354,22 @@ export default {
       showNewPassword: false,
       showConfirmPassword: false,
 
-      accountSettings: {
-        language: 'English',
-        timezone: 'UTC+7 (Asia/Ho_Chi_Minh)',
-        emailNotifications: true,
-        pushNotifications: true,
-        taskReminders: true
-      },
       savingSettings: false,
 
+      // Snackbars
       showSuccessSnackbar: false,
       showErrorSnackbar: false,
       successMessage: '',
       errorMessage: '',
 
+      // Delete account
       showDeleteDialog: false,
       deleteConfirmation: '',
       deletingAccount: false,
 
       usernameRules: [
         v => !!v || 'Username is required',
-        v => (v && v.length >= 3) || 'Username must be at least 3 characters',
-        v => (v && v.length <= 20) || 'Username must be less than 20 characters',
-        v => /^[a-zA-Z0-9_]+$/.test(v) || 'Username can only contain letters, numbers, and underscores'
+        v => (v && v.length >= 3) || 'Username must be at least 3 characters'
       ],
       emailRules: [
         v => !!v || 'Email is required',
@@ -408,25 +386,40 @@ export default {
       ],
       newPasswordRules: [
         v => !!v || 'New password is required',
-        v => (v && v.length >= 8) || 'Password must be at least 8 characters',
-        v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
-        v => /[a-z]/.test(v) || 'Password must contain at least one lowercase letter',
-        v => /\d/.test(v) || 'Password must contain at least one number',
-        v => /[!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one special character'
+        v => (v && v.length >= 8) || 'Password must be at least 8 characters'
       ],
       deleteConfirmationRules: [
         v => v === 'DELETE' || 'Type DELETE to confirm'
       ]
     }
   },
+
   computed: {
     ...mapGetters(["user_id", "avata", "username", "email"]),
+
+    hasProfileChanges() {
+      if (!this.originalProfileForm || !this.profileForm) return false;
+
+      return JSON.stringify(this.originalProfileForm) !== JSON.stringify(this.profileForm);
+    },
+
+    isProfileValid() {
+      const email = this.profileForm.email;
+      const username = this.profileForm.username;
+
+      const emailValid = email && /.+@.+\..+/.test(email);
+      const usernameValid = username && username.length >= 3;
+
+      return emailValid && usernameValid;
+    },
+
     confirmPasswordRules() {
       return [
         v => !!v || 'Please confirm your password',
         v => v === this.passwordForm.newPassword || 'Passwords do not match'
       ]
     },
+
     passwordStrengthValue() {
       const password = this.passwordForm.newPassword
       if (!password) return 0
@@ -440,6 +433,7 @@ export default {
 
       return score
     },
+
     passwordStrengthText() {
       const value = this.passwordStrengthValue
       if (value === 0) return 'No password'
@@ -448,6 +442,7 @@ export default {
       if (value <= 80) return 'Good'
       return 'Strong'
     },
+
     passwordStrengthColor() {
       const value = this.passwordStrengthValue
       if (value === 0) return 'grey--text'
@@ -456,28 +451,66 @@ export default {
       if (value <= 80) return 'info--text'
       return 'success--text'
     },
+
     hasMinLength() {
-      return this.passwordForm.newPassword.length >= 8
+      return this.passwordForm && this.passwordForm.newPassword && this.passwordForm.newPassword.length >= 8
     },
     hasUppercase() {
-      return /[A-Z]/.test(this.passwordForm.newPassword)
+      return this.passwordForm && /[A-Z]/.test(this.passwordForm.newPassword || '')
     },
     hasLowercase() {
-      return /[a-z]/.test(this.passwordForm.newPassword)
+      return this.passwordForm && /[a-z]/.test(this.passwordForm.newPassword || '')
     },
     hasNumber() {
-      return /\d/.test(this.passwordForm.newPassword)
+      return this.passwordForm && /\d/.test(this.passwordForm.newPassword || '')
     },
     hasSpecialChar() {
-      return /[!@#$%^&*(),.?":{}|<>]/.test(this.passwordForm.newPassword)
+      return this.passwordForm && /[!@#$%^&*(),.?":{}|<>]/.test(this.passwordForm.newPassword || '')
     }
   },
+
   created() {
+    this.userInfo.userId = this.user_id;
+    this.userInfo.email = this.email;
+    this.userInfo.username = this.username;
     this.userInfo.avatar = this.avata;
+
+    let name = this.userInfo.username.split('_');
+    this.userInfo.firstName = name[0] || '';
+    this.userInfo.lastName = name[1] || '';
+
     this.initializeProfileForm()
   },
+
+  watch: {
+    'profileForm.firstName': function () {
+      this.updateUsername();
+    },
+    'profileForm.lastName': function () {
+      this.updateUsername();
+    },
+    currentPassword() {
+      this.passwordError = '';
+      if (this.$refs.verificationForm) {
+        this.$refs.verificationForm.validate();
+      }
+    }
+  },
+
   methods: {
-    ...mapActions(["_uploadAvatar"]),
+    ...mapActions(["_uploadAvatar", "_verifyPassword", "_changePassword","_deleteAccount","_Logout"]),
+
+    handleLogout() {
+      this._Logout()
+      this.$router.push("/")
+    },
+
+    updateUsername() {
+      const first = (this.profileForm.firstName || '').trim().replace(/\s+/g, '');
+      const last = (this.profileForm.lastName || '').trim().replace(/\s+/g, '');
+      this.profileForm.username = first && last ? `${first}_${last}` : first || last;
+    },
+
     goBack() {
       if (this.$router) {
         this.$router.back()
@@ -487,27 +520,28 @@ export default {
     },
 
     initializeProfileForm() {
-      this.profileForm = { ...this.userInfo }
+      this.profileForm = { ...this.userInfo };
+      this.originalProfileForm = { ...this.userInfo };
     },
 
     startEditingProfile() {
-      this.editingProfile = true
+      this.editingProfile = true;
+      this.originalProfileForm = { ...this.profileForm };
     },
 
     cancelEditingProfile() {
-      this.editingProfile = false
-      this.initializeProfileForm()
+      this.editingProfile = false;
+      this.profileForm = { ...this.originalProfileForm };
     },
 
     async saveProfile() {
-      if (!this.profileFormValid) return
+      if (!this.hasProfileChanges || !this.isProfileValid) return
 
       this.savingProfile = true
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-
         Object.assign(this.userInfo, this.profileForm)
-
+        this.originalProfileForm = { ...this.profileForm };
+        console.log(this.userInfo)
         this.editingProfile = false
         this.showSuccess('Profile updated successfully!')
       } catch (error) {
@@ -532,20 +566,21 @@ export default {
       }
 
       this.loading = true
-
       this.uploadingAvatar = true
+
       try {
         const reader = new FileReader()
         reader.onload = async (e) => {
           const base64 = e.target.result
           this.userInfo.avatar = base64
           this.profileForm.avatar = base64
+
           const infoavata = {
             avataurl: base64,
             userid: this.user_id
           }
-          await this._uploadAvatar(infoavata)
 
+          await this._uploadAvatar(infoavata)
           this.showSuccess('Avatar updated successfully!')
           this.uploadingAvatar = false
           this.loading = false
@@ -576,6 +611,7 @@ export default {
         newPassword: '',
         confirmPassword: ''
       }
+
       if (this.$refs.verificationForm) {
         this.$refs.verificationForm.reset()
       }
@@ -591,10 +627,15 @@ export default {
       this.passwordError = ''
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        if (this.currentPassword === 'password123') {
+        const verifyinfo = {
+          pass: this.currentPassword,
+          email: this.email
+        }
+        const verify_status = await this._verifyPassword(verifyinfo)
+        if (verify_status) {
           this.passwordVerified = true
         } else {
+          this.showError('Incorrect password. Please try again.')
           this.passwordError = 'Incorrect password. Please try again.'
         }
       } catch (error) {
@@ -607,11 +648,14 @@ export default {
     async changePassword() {
       if (!this.passwordFormValid) return
 
+      const changepassinfo = {
+        userid: this.user_id,
+        newpassword: this.passwordForm.newPassword
+      }
+
       this.changingPassword = true
-
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000))
-
+        this._changePassword(changepassinfo)
         this.showSuccess('Password changed successfully!')
         this.closePasswordDialog()
       } catch (error) {
@@ -621,33 +665,21 @@ export default {
       }
     },
 
-    async saveAccountSettings() {
-      this.savingSettings = true
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        this.showSuccess('Settings saved successfully!')
-      } catch (error) {
-        this.showError('Failed to save settings. Please try again.')
-      } finally {
-        this.savingSettings = false
-      }
-    },
-
     async deleteAccount() {
       if (this.deleteConfirmation !== 'DELETE') return
-
       this.deletingAccount = true
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000))
-
+        this._deleteAccount(this.user_id)
         this.showSuccess('Account deleted successfully!')
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
       } catch (error) {
         this.showError('Failed to delete account. Please try again.')
       } finally {
         this.deletingAccount = false
         this.showDeleteDialog = false
         this.deleteConfirmation = ''
+        this.handleLogout();
       }
     },
 
@@ -691,7 +723,6 @@ export default {
   font-weight: 500;
   transition: transform 0.2s ease;
 }
-
 
 @media (max-width: 600px) {
   .back-button-container {
