@@ -395,7 +395,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["user_id", "avata", "username", "email"]),
+    ...mapGetters(["user_id", "avata", "username", "email","bio"]),
 
     hasProfileChanges() {
       if (!this.originalProfileForm || !this.profileForm) return false;
@@ -474,6 +474,7 @@ export default {
     this.userInfo.email = this.email;
     this.userInfo.username = this.username;
     this.userInfo.avatar = this.avata;
+    this.userInfo.bio = this.bio;
 
     let name = this.userInfo.username.split('_');
     this.userInfo.firstName = name[0] || '';
@@ -498,7 +499,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["_uploadAvatar", "_verifyPassword", "_changePassword","_deleteAccount","_Logout"]),
+    ...mapActions(["_uploadAvatar", "_verifyPassword","_updateInfo", "_changePassword","_deleteAccount","_Logout"]),
 
     handleLogout() {
       this._Logout()
@@ -541,7 +542,12 @@ export default {
       try {
         Object.assign(this.userInfo, this.profileForm)
         this.originalProfileForm = { ...this.profileForm };
-        console.log(this.userInfo)
+        let updateinfo = this.userInfo
+        let newUpdateInfo = { ...updateinfo }
+        delete newUpdateInfo.firstName
+        delete newUpdateInfo.lastName
+        this._updateInfo(newUpdateInfo)
+        
         this.editingProfile = false
         this.showSuccess('Profile updated successfully!')
       } catch (error) {

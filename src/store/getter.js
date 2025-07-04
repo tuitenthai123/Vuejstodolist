@@ -5,6 +5,7 @@ const gettersConfig = {
     username: state => state.username,
     user_id: state => state.user_id,
     tasks: state => state.tasks,
+    bio: state => state.bio,
     avata:state => state.avata
 }
 

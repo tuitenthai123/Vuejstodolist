@@ -5,6 +5,7 @@ const stateConfig = {
     username:"",
     user_id:"",
     avata:"",
+    bio:"",
     tasks:"[]",
 }
 

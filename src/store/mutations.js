@@ -20,6 +20,9 @@ const mutationsConfig = {
     SET_AVATA_DATA(state, status) {
         state.avata = status
     },
+    SET_BIO(state, status) {
+        state.bio = status
+    },
 }
 
 export default mutationsConfig

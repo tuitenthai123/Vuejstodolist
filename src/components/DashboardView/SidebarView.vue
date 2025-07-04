@@ -63,7 +63,7 @@ export default {
           <img alt="Avatar" :src=this.avata>
         </v-avatar>
         <div class="d-flex flex-column justify-start">
-          <span class="font-weight-medium text-h5">{{ this.username }}</span>
+          <span class="font-weight-medium text-h5 ellipsis-15">{{ username.length > 15 ? username.slice(0, 15) + '...' : username }}</span>
           <span class="text-caption grey--text">{{ this.email }}</span>
         </div>
       </v-list-item>
@@ -103,3 +103,14 @@ export default {
     </template>
   </v-navigation-drawer>
 </template>
+
+<style>
+.ellipsis-15 {
+  max-width: 190px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+</style>

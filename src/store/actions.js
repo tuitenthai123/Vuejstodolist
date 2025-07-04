@@ -37,6 +37,7 @@ const actionsConfig = {
                 commit('SET_USER_NAME', lowerUsername);
                 commit('SET_USER_ID', response?.data?.id)
                 commit('SET_AVATA_DATA', response?.data?.avata)
+                commit('SET_BIO', response?.data?.bio)
                 localStorage.setItem("token", response?.data?.token);
                 localStorage.setItem('user_info', JSON.stringify(datauser));
                 return true;
@@ -311,6 +312,34 @@ const actionsConfig = {
                 localStorage.clear();
             }
             return delete_status?.data?.message
+        } catch (error) {
+            return false;
+        }
+    },
+
+    async _updateInfo({commit}, newUpdateInfo) {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+                }
+            };
+
+            await axios.post(
+                `${process.env.VUE_APP_SERVER_URL}/api/setting/update-info`,
+                {
+                    newUpdateInfo
+                },
+                config
+            );
+
+            commit('SET_USER_NAME', newUpdateInfo?.username);
+            commit('SET_BIO', newUpdateInfo?.bio);
+            commit('SET_EMAIL', newUpdateInfo?.email)
+            return true
         } catch (error) {
             return false;
         }
